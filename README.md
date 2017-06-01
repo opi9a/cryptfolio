@@ -5,7 +5,7 @@ Very basic python 3.x tool for collecting crypto prices from www.coinmarketcap.c
 Usage:  
     `python3 cryptfolio.py [OPTIONAL config file name - defaults to config.txt]`
 
-Looks by for config file in the same folder containing currency names and volumes (number of units of the currency) separated by a space.  Then queries www.coinmarketcap.com for the prices, and calculates the values etc (currently limited to searching the top 20 currencies).
+Looks for a config file (in the same folder as the script) containing currency names and volumes (number of units of the currency) separated by a space.  Then queries www.coinmarketcap.com for the prices, and calculates the values etc (currently limited to searching the top 20 currencies).
 
 For example, running `python3 cryptfolio.py` in a folder with a `config.txt` file containing the following:
 
@@ -24,7 +24,7 @@ will return
     TOTAL                                            3,095
     (non bitcoin                                       637)
 
-Lines in the config file beginning `#` will be ignored.  It fails if lines are empty.
+Lines in the config file beginning `#` are ignored.  It fails if lines are empty.
 
 Can optionally pass a config file by name in the command line, or it will default to look for `config.txt`.
 
