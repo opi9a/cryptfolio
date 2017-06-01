@@ -1,8 +1,11 @@
 # cryptfolio
 
-Very basic and not very efficient python 3.x tool for collecting crypto prices from www.coinmarketcap.com and printing portfolio values in GBP.
+Very basic python 3.x tool for collecting crypto prices from www.coinmarketcap.com and printing portfolio values in GBP.
 
-Looks for a `config.txt` file in the same folder, with currency names and volumes separated by a space, eg a `config.txt` file containing:
+Usage:  
+    `python3 cryptfolio.py [OPTIONAL config file name - defaults to config.txt]`
+
+Looks by default for a `config.txt` file in the same folder, with currency names and volumes (number of units of the currency) separated by a space, eg a `config.txt` file containing:
 
     bitcoin 1.337
     dogecoin 99999.99
@@ -10,15 +13,16 @@ Looks for a `config.txt` file in the same folder, with currency names and volume
 
 will return
 
-    COIN          PRICE        UNITS       VALUE
-    bitcoin    1,778.79         1.34    2,378.25
-    dogecoin       0.00    99,999.99      209.99
-    monero        32.63        12.34      402.71
+    COIN           PRICE        UNITS        VALUE       SHARE
+    bitcoin     1,837.94         1.34        2,457       79.4%
+    dogecoin        0.00    99,999.99          214        6.9%
+    monero         34.32        12.34          424       13.7%
 
-    TOTAL                                  2,991
-    (non bitcoin                             613)
+    TOTAL                                            3,095
+    (non bitcoin                                       637)
 
+Lines in the config file beginning `#` will be ignored.  It fails if lines are empty.
 
-Lines beginning `#` will be ignored.  It fails if lines are empty.
+Can also pass a config file by name in the command line.
 
-Check http://coinmarketcap.com/api/ for the API, or https://api.coinmarketcap.com/v1/ticker/ to work out naming conventions (returns all data).
+Check http://coinmarketcap.com/api/ for the API, or https://api.coinmarketcap.com/v1/ticker/limit=20 to work out naming conventions (returns all data).
