@@ -1,4 +1,5 @@
 from urllib.request import urlretrieve
+import json
 
 def get_coins(conf="config.txt"):  
     c, v = [],[]  
@@ -36,8 +37,6 @@ for i,coin in enumerate(coins):
     values.append(value)
     total = total + value
 
-print(total)
-
 shares = []    
 for i,value in enumerate(values):
     shares.append(value/total)
@@ -46,15 +45,17 @@ len1 = len(max(coins, key=len))
 len2 = len(str(int(max(vols))))
 len3 = len(str(int(max(prices))))
 len4 = len(str(int(max(values))))
+pad = 2
 
-print("")
 print("\nCOIN", " "*(len1+1), "PRICE        UNITS        VALUE       SHARE")
 
 for i, coin in enumerate(coins):
-    print(coin, end = (" "*(len1+2-len(coin))))
+    print(coin, end = (" "*(len1+pad-len(coin))))
     print("{:10,.2f}".format(prices[i]), " ",
           "{:10,.2f}".format(vols[i]), " ",
           "{:10,.0f}".format(values[i]),
           "{:10,.1f}%".format(shares[i]*100))
 
 print("\nTOTAL", " "*37, "{:10,.0f}".format(total))
+print("(non", coins[0], " "*30,  "{:10,.0f})".format(total-values[0]))
+print("")
