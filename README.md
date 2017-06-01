@@ -7,6 +7,7 @@ Usage:
 
 Looks by default for a `config.txt` file in the same folder, with currency names and volumes (number of units of the currency) separated by a space, eg a `config.txt` file containing:
 
+    # comments can go here
     bitcoin 1.337
     dogecoin 99999.99
     monero 12.34
