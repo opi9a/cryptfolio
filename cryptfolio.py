@@ -1,4 +1,5 @@
-from urllib.request import urlretrieve
+#from urllib.request import urlretrieve
+import urllib.request
 import json
 
 def get_coins(conf="config.txt"):  
@@ -17,7 +18,7 @@ def get_coins(conf="config.txt"):
 
 def get_data(target = "long_return.txt"):
     source = "https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit=20"
-    urlretrieve(source, target)
+    urllib.request.urlretrieve(source, target)
     with open(target) as data_file:
         data = json.load(data_file)       
     return data
@@ -44,7 +45,29 @@ def calc_shares(coins):
         shares.append(value/total)
     return shares
 
-def print_folio(coins, vols, prices, values, shares, total):
+def get_total_mkt():
+    targeturl = "https://api.coinmarketcap.com/v1/global/?convert=GBP"
+    with urllib.request.urlopen(targeturl) as response:
+        raw_data = response.read()
+
+    # that gives a bytes array, which needs to be converted to a string 
+    # before using json.loads on it
+
+    string = raw_data.decode("utf-8")
+    data = json.loads(string)
+       
+    return data["total_market_cap_gbp"]
+
+def get_coin_caps(coins, datafile):
+    caps = []
+    for coin in coins:
+        for entry in datafile:
+            if entry['id'] == coin:
+                caps.append(float(entry['market_cap_gbp']))
+    return caps    
+
+
+def print_folio(coins, vols, prices, values, shares, caps, total):
         
     len1 = len(max(coins, key=len))
     len2 = len(str(int(max(vols))))
@@ -53,14 +76,15 @@ def print_folio(coins, vols, prices, values, shares, total):
     pad = 2
     
 # TO DO:  better padding etc
-    print("\nCOIN", " "*(len1+1), "PRICE        UNITS        VALUE       SHARE      SHARE OF TOTAL")
+    print("\nCOIN", " "*(len1+1), "PRICE        UNITS        VALUE       SHARE      WEIGHT")
     
     for i, coin in enumerate(coins):
         print(coin, end = (" "*(len1+pad-len(coin))))
         print("{:10,.3f}".format(prices[i]), " ",
               "{:10,.2f}".format(vols[i]), " ",
               "{:10,.0f}".format(values[i]),
-              "{:10,.1f}%".format(shares[i]*100))
+              "{:10,.1f}%".format(shares[i]*100),
+              "{:10,.0f}%".format(100*(values[i] / caps[i])/(values[0]/caps[0])))
     
     print("\nTOTAL", " "*37, "{:10,.0f}".format(total))
     print("(non", coins[0], " "*30,  "{:10,.0f})".format(total-values[0]))
@@ -76,12 +100,13 @@ if __name__ == "__main__":
     else:
         config_file = "config.txt"
     coins, vols = get_coins(config_file)
-    prices = get_prices(coins, get_data())
+    data = get_data()
+    prices = get_prices(coins, data)
     values, total = calc_values(coins)
     shares = calc_shares(coins)
-#    caps = get_coin_caps(coins, get_data())
-#    total_cap = get_total_mkt()
-#    total_shares = calc_total_shares(caps, total_cap)
-    print_folio(coins, vols, prices, values, shares, total)
+    caps = get_coin_caps(coins, data)
+    #total_mkt_cap = get_total_mkt()
+    print_folio(coins, vols, prices, values, shares, caps, total)
+    #print("Total mkt cap is ", total_mkt_cap)
     
     
