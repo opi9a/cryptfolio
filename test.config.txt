@@ -1,0 +1,3 @@
+bitcoin 1.337
+dogecoin 99999.99
+monero 12.34
