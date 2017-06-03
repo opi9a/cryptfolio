@@ -44,34 +44,6 @@ def calc_shares(coins):
         shares.append(value/total)
     return shares
 
-#def get_total_mkt():
-#    targeturl = "https://api.coinmarketcap.com/v1/global/?convert=GBP"
-#    with urllib.request.urlopen(targeturl) as response:
-#        raw_data = response.read()
-#
-#    # that gives a bytes array, which needs to be converted to a string 
-#    # before using json.loads on it
-#
-#    string = raw_data.decode("utf-8")
-#    data = json.loads(string)
-#       
-#    return data["total_market_cap_gbp"]
-#
-#def get_coin_caps(coins, datafile):
-#    caps = []
-#    for coin in coins:
-#        for entry in datafile:
-#            if entry['id'] == coin:
-#                prices.append(float(entry['market_cap_gbp']))
-#    return caps    
-#
-#def calc_total_shares(caps, total_cap):
-#    total_shares = []
-#    for cap in caps:
-#        total_shares.append(cap/total_cap)
-#    return total_shares
-#
-
 def print_folio(coins, vols, prices, values, shares, total):
         
     len1 = len(max(coins, key=len))
