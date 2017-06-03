@@ -76,7 +76,8 @@ def print_folio(coins, vols, prices, values, shares, caps, total):
     pad = 2
     
 # TO DO:  better padding etc
-    print("\nCOIN", " "*(len1+1), "PRICE        UNITS        VALUE       SHARE      WEIGHT")
+    print("\nCOIN", " "*(len1+1), "PRICE        UNITS        VALUE       SHARE \
+     WEIGHT      £PPPW")
     
     for i, coin in enumerate(coins):
         print(coin, end = (" "*(len1+pad-len(coin))))
@@ -84,7 +85,8 @@ def print_folio(coins, vols, prices, values, shares, caps, total):
               "{:10,.2f}".format(vols[i]), " ",
               "{:10,.0f}".format(values[i]),
               "{:10,.1f}%".format(shares[i]*100),
-              "{:10,.0f}%".format(100*(values[i] / caps[i])/(values[0]/caps[0])))
+              "{:10,.0f}%".format(100*(values[i] / caps[i])/(values[0]/caps[0])),
+              "{:10,.2f}".format(0.01*(values[0]/caps[0])*caps[i]))
     
     print("\nTOTAL", " "*37, "{:10,.0f}".format(total))
     print("(non", coins[0], " "*30,  "{:10,.0f})".format(total-values[0]))
