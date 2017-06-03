@@ -29,3 +29,4 @@ Lines in the config file beginning `#` are ignored.  It fails if lines are empty
 Can optionally pass a config file by name in the command line, or it will default to look for `config.txt`.
 
 Check http://coinmarketcap.com/api/ for the API, or https://api.coinmarketcap.com/v1/ticker/limit=20 to work out naming conventions (returns all data).
+I JUST ADDED THIS RIGHT NOW 273
