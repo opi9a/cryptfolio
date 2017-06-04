@@ -68,7 +68,13 @@ def get_coin_caps(coins, datafile):
 
 
 def print_folio(coins, vols, prices, values, shares, caps, total):
-        
+    
+    for i, coin in enumerate(coins):
+        if coin == "dogecoin":
+            coins[i] = "dogecoin (000)"
+            prices[i] = prices[i] * 1000
+            vols[i] = vols[i] / 1000
+    
     len1 = len(max(coins, key=len))
     len2 = len(str(int(max(vols))))
     len3 = len(str(int(max(prices))))
@@ -81,7 +87,7 @@ def print_folio(coins, vols, prices, values, shares, caps, total):
     
     for i, coin in enumerate(coins):
         print(coin, end = (" "*(len1+pad-len(coin))))
-        print("{:10,.3f}".format(prices[i]), " ",
+        print("{:10,.2f}".format(prices[i]), " ",
               "{:10,.2f}".format(vols[i]), " ",
               "{:10,.0f}".format(values[i]),
               "{:10,.1f}%".format(shares[i]*100),
@@ -89,7 +95,7 @@ def print_folio(coins, vols, prices, values, shares, caps, total):
               "{:10,.2f}".format(0.01*(values[0]/caps[0])*caps[i]))
     
     print("\nTOTAL", " "*37, "{:10,.0f}".format(total))
-    print("(non", coins[0], " "*30,  "{:10,.0f})".format(total-values[0]))
+    print("(non", coins[0], ")", " "*28,  "({:10,.0f})".format(total-values[0]))
     print("")
 
 
