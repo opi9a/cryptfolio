@@ -1,6 +1,7 @@
-#from urllib.request import urlretrieve
 import urllib.request
 import json
+from tkinter import *
+from tkinter.font import Font
 
 def get_coins(conf="config.txt"):  
     '''Parses a config file to find coin names and numbers of units
@@ -17,7 +18,7 @@ def get_coins(conf="config.txt"):
     return c, v
 
 def get_data(target = "long_return.txt"):
-    source = "https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit=20"
+    source = "https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit=25"
     urllib.request.urlretrieve(source, target)
     with open(target) as data_file:
         data = json.load(data_file)       
@@ -68,7 +69,6 @@ def get_coin_caps(coins, datafile):
 
 
 def print_folio(coins, vols, prices, values, shares, caps, total):
-    
     for i, coin in enumerate(coins):
         if coin == "dogecoin":
             coins[i] = "dogecoin (000)"
@@ -95,7 +95,7 @@ def print_folio(coins, vols, prices, values, shares, caps, total):
               "{:10,.2f}".format(0.01*(values[0]/caps[0])*caps[i]))
     
     print("\nTOTAL", " "*37, "{:10,.0f}".format(total))
-    print("(non", coins[0], ")", " "*28,  "({:10,.0f})".format(total-values[0]))
+    print("(non", coins[0], ")", " "*27,  "({:10,.0f})".format(total-values[0]))
     print("")
 
 
@@ -110,11 +110,43 @@ if __name__ == "__main__":
     coins, vols = get_coins(config_file)
     data = get_data()
     prices = get_prices(coins, data)
-    values, total = calc_values(coins)
-    shares = calc_shares(coins)
-    caps = get_coin_caps(coins, data)
-    #total_mkt_cap = get_total_mkt()
-    print_folio(coins, vols, prices, values, shares, caps, total)
-    #print("Total mkt cap is ", total_mkt_cap)
+    if len(coins) == len(prices):
+        values, total = calc_values(coins)
+        shares = calc_shares(coins)
+        caps = get_coin_caps(coins, data)
+        #total_mkt_cap = get_total_mkt()
+        print_folio(coins, vols, prices, values, shares, caps, total)
+        #print("Total mkt cap is ", total_mkt_cap)
+        
+        root = Tk()
+        myfont = Font(family="Garuda", size=12)
+        w = 20
+        h = 0
+        for i, coin in enumerate(coins):
     
-    
+            Label(text = coin, width=20, font=myfont, anchor=W, height=h
+                    ).grid(row=i, column=0, ipady=0, pady=0)
+            Label(text = "{:10,.2f}".format(prices[i]), width=w, anchor=E,
+                    height=h, font=myfont).grid(row=i, column=1, ipady=0, pady=0)
+            Label(text = "{:10,.2f}".format(vols[i]), width=w, anchor=E, height=h,
+                    font=myfont).grid(row=i, column=2)
+            Label(text = "{:10,.2f}".format(values[i]), width=w, anchor=E, height=h, 
+                    font=myfont).grid(row=i, column=3)
+    #        Label(text = "{:10,.2f}".format(shares[i]), width=w, anchor=E, 
+    #                height=h, font=myfont).grid(row=i, column=4)
+    #    
+    #    Label(text = "Total £: ", width=w, font=myfont, 
+    #            height=h, anchor=W).grid(row=len(coins)+1, column=0)
+    #    Label(text = "{:10,.0f}".format(total), width=w, font=myfont, 
+    #            height=h, anchor=E).grid(row=len(coins)+1, column=1)
+    #
+        mainloop()
+        
+    else:
+        print("\nOK so I've got {} coins and {} prices.".format(len(coins), len(prices)))
+        print("\nThe coins are", " ".join(coins))
+        print("\nThe prices are", " ".join(str(x)[:5] for x in prices))
+        print("\nThat probably means a coin has dropped out of the top 20, which \
+is how many coins are retrieved.  This should be fixed in a future \
+version but for now, could look in code to find the call to the \
+coinmarket.cap api, and change the 'limit' argument")
