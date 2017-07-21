@@ -35,7 +35,7 @@ def get_prices(coins, datafile):
                 prices.append(float(entry['price_gbp']))
     return prices
 
-def calc_values(coins):  
+def calc_values(coins, vols, prices):  
     values, total = [], 0.0
     for i,coin in enumerate(coins):
         value=vols[i]*float(prices[i])
@@ -43,7 +43,7 @@ def calc_values(coins):
         total = total + value    
     return values, total
 
-def calc_shares(coins):
+def calc_shares(values, total):
     shares = []    
     for i,value in enumerate(values):
         shares.append(value/total)
@@ -89,8 +89,6 @@ def mk_dict(coins, vols, prices, values, shares, caps):
         out_dict[coin].append(0.01*(values[0]/caps[0])*caps[i])
     return out_dict
 
-
-
 def print_folio2(coin_dict, total):
     print("")
     print(str(datetime.datetime.now()).split(".")[0])
@@ -109,25 +107,19 @@ def print_folio2(coin_dict, total):
             print("{:>0,.2f}".format(coin_dict[coin][i]).rjust(pad), end="")
 
     print("\n\nTOTAL", " "*37, "{:10,.0f}".format(total))
-    print("(non bitcoin)", " "*27,  "({:10,.0f})".format(total-coin_dict['bitcoin'][0]))
+    print("(non bitcoin)", " "*27,  "({:10,.0f})".format(total-coin_dict['bitcoin'][2]))
     print("")
 
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) == 2:
-        config_file = sys.argv[1]
-    else:
-        config_file = "config.txt"
+def crypt_get(config_file):
     coins, vols = get_coins(config_file)
     data = get_data()
     prices = get_prices(coins, data)
     if len(coins) == len(prices):
-        values, total = calc_values(coins)
-        shares = calc_shares(coins)
+        values, total = calc_values(coins, vols, prices)
+        shares = calc_shares(values, total)
         caps = get_coin_caps(coins, data)
         #total_mkt_cap = get_total_mkt()
         coin_dict = mk_dict(coins, vols, prices, values, shares, caps)
-        print_folio2(coin_dict, total)
         
     else:
         print("\nOK so I've got {} coins and {} prices.".format(len(coins), len(prices)))
@@ -137,3 +129,16 @@ if __name__ == "__main__":
 is how many coins are retrieved.  This should be fixed in a future \
 version but for now, could look in code to find the call to the \
 coinmarket.cap api, and change the 'limit' argument")
+    return coin_dict, total
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) == 2:
+        config_file = sys.argv[1]
+    else:
+        config_file = "config.txt"
+
+    coin_dict, total = crypt_get(config_file)
+    print_folio2(coin_dict, total)
+
+    

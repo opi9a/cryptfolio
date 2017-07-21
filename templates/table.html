@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Cryptofolio</title>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="10">     
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Portfolio valuation</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Coin</th>
+        <th><p class="text-right">Price</p></th>
+        <th><p class="text-right">Volume</p></th>
+        <th><p class="text-right">Value</p></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for k in out_dict %}
+     
+      <tr>
+        <td>{{ k }}</td>
+        <td><p class="text-right">{{ "£{:>0,.2f}".format(out_dict[k][0]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][1]) }}</p></td>
+        <td><p class="text-right">{{ "£{:>0,.2f}".format(out_dict[k][2]) }}</p></td>
+      </tr>
+    
+    {% endfor %}
+
+      <tr>
+        <td><strong> TOTAL </strong></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+        <td><strong><p class="text-right">{{ "£{:>0,.2f}".format(total) }}</strong></p></td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
