@@ -1,7 +1,10 @@
+#!/home/gav/anaconda3/python3
+
 import urllib.request
 import json
 from tkinter import *
 from tkinter.font import Font
+import datetime
 
 def get_coins(conf="config.txt"):  
     '''Parses a config file to find coin names and numbers of units
@@ -18,7 +21,7 @@ def get_coins(conf="config.txt"):
     return c, v
 
 def get_data(target = "long_return.txt"):
-    source = "https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit=25"
+    source = "https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit=45"
     urllib.request.urlretrieve(source, target)
     with open(target) as data_file:
         data = json.load(data_file)       
@@ -67,39 +70,47 @@ def get_coin_caps(coins, datafile):
                 caps.append(float(entry['market_cap_gbp']))
     return caps    
 
+def mk_dict(coins, vols, prices, values, shares, caps):
 
-def print_folio(coins, vols, prices, values, shares, caps, total):
     for i, coin in enumerate(coins):
         if coin == "dogecoin":
             coins[i] = "dogecoin (000)"
             prices[i] = prices[i] * 1000
             vols[i] = vols[i] / 1000
-    
-    len1 = len(max(coins, key=len))
-    len2 = len(str(int(max(vols))))
-    len3 = len(str(int(max(prices))))
-    len4 = len(str(int(max(values))))
-    pad = 2
-    
-# TO DO:  better padding etc
-    print("\nCOIN", " "*(len1+1), "PRICE        UNITS        VALUE       SHARE \
-     WEIGHT      £PPPW")
-    
+
+    out_dict={}
     for i, coin in enumerate(coins):
-        print(coin, end = (" "*(len1+pad-len(coin))))
-        print("{:10,.2f}".format(prices[i]), " ",
-              "{:10,.2f}".format(vols[i]), " ",
-              "{:10,.0f}".format(values[i]),
-              "{:10,.1f}%".format(shares[i]*100),
-              "{:10,.0f}%".format(100*(values[i] / caps[i])/(values[0]/caps[0])),
-              "{:10,.2f}".format(0.01*(values[0]/caps[0])*caps[i]))
-    
-    print("\nTOTAL", " "*37, "{:10,.0f}".format(total))
-    print("(non", coins[0], ")", " "*27,  "({:10,.0f})".format(total-values[0]))
+        out_dict[coin]=[]
+        out_dict[coin].append(prices[i])
+        out_dict[coin].append(vols[i])
+        out_dict[coin].append(values[i])
+        out_dict[coin].append(shares[i]*100)
+        out_dict[coin].append(100*(values[i] / caps[i])/(values[0]/caps[0]))
+        out_dict[coin].append(0.01*(values[0]/caps[0])*caps[i])
+    return out_dict
+
+
+
+def print_folio2(coin_dict, total):
     print("")
+    print(str(datetime.datetime.now()).split(".")[0])
+    
+    len1 = len(max(coin_dict.keys(), key=len))+2
+    pad = 13
 
+    print("\nCOIN".ljust(len1+1), end="")
+    for title in ("PRICE UNITS VALUE SHARE WEIGHT £PPPW").split():
+        print(title.rjust(pad), end="")
+    
+    for coin in coin_dict:
+        print("")
+        print(coin.ljust(len1), end = "")
+        for i in range(len(coin_dict[coin])):
+            print("{:>0,.2f}".format(coin_dict[coin][i]).rjust(pad), end="")
 
-
+    print("\n\nTOTAL", " "*37, "{:10,.0f}".format(total))
+    print("(non bitcoin)", " "*27,  "({:10,.0f})".format(total-coin_dict['bitcoin'][0]))
+    print("")
 
 if __name__ == "__main__":
     import sys
@@ -115,32 +126,8 @@ if __name__ == "__main__":
         shares = calc_shares(coins)
         caps = get_coin_caps(coins, data)
         #total_mkt_cap = get_total_mkt()
-        print_folio(coins, vols, prices, values, shares, caps, total)
-        #print("Total mkt cap is ", total_mkt_cap)
-        
-        root = Tk()
-        myfont = Font(family="Garuda", size=12)
-        w = 20
-        h = 0
-        for i, coin in enumerate(coins):
-    
-            Label(text = coin, width=20, font=myfont, anchor=W, height=h
-                    ).grid(row=i, column=0, ipady=0, pady=0)
-            Label(text = "{:10,.2f}".format(prices[i]), width=w, anchor=E,
-                    height=h, font=myfont).grid(row=i, column=1, ipady=0, pady=0)
-            Label(text = "{:10,.2f}".format(vols[i]), width=w, anchor=E, height=h,
-                    font=myfont).grid(row=i, column=2)
-            Label(text = "{:10,.2f}".format(values[i]), width=w, anchor=E, height=h, 
-                    font=myfont).grid(row=i, column=3)
-    #        Label(text = "{:10,.2f}".format(shares[i]), width=w, anchor=E, 
-    #                height=h, font=myfont).grid(row=i, column=4)
-    #    
-    #    Label(text = "Total £: ", width=w, font=myfont, 
-    #            height=h, anchor=W).grid(row=len(coins)+1, column=0)
-    #    Label(text = "{:10,.0f}".format(total), width=w, font=myfont, 
-    #            height=h, anchor=E).grid(row=len(coins)+1, column=1)
-    #
-        mainloop()
+        coin_dict = mk_dict(coins, vols, prices, values, shares, caps)
+        print_folio2(coin_dict, total)
         
     else:
         print("\nOK so I've got {} coins and {} prices.".format(len(coins), len(prices)))
