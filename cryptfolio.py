@@ -131,6 +131,13 @@ version but for now, could look in code to find the call to the \
 coinmarket.cap api, and change the 'limit' argument")
     return coin_dict, total
 
+def get_blockh():
+    with urllib.request.urlopen('https://blockchain.info/q/getblockcount') as f:
+        h = int(f.read())
+
+    return h
+
+
 if __name__ == "__main__":
     import sys
     if len(sys.argv) == 2:

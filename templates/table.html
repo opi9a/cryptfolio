@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<nav class="navbar navbar-inverse">
+<nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="#">Cryptfolio</a>
@@ -31,13 +31,16 @@
 
 <div class="container">
   <h2>Portfolio valuation</h2>
-  <table class="table">
+  <table class="table table-striped">
     <thead>
       <tr>
         <th>Coin</th>
-        <th><p class="text-right">Price</p></th>
+        <th><p class="text-right">Price, £</p></th>
         <th><p class="text-right">Volume</p></th>
-        <th><p class="text-right">Value</p></th>
+        <th><p class="text-right">Value, £</p></th>
+        <th><p class="text-right">Share</p></th>
+        <th><p class="text-right">Weight</p></th>
+        <th><p class="text-right">£PPPW</p></th>
       </tr>
     </thead>
     <tbody>
@@ -45,9 +48,12 @@
      
       <tr>
         <td>{{ k }}</td>
-        <td><p class="text-right">{{ "£{:>0,.2f}".format(out_dict[k][0]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][0]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][1]) }}</p></td>
-        <td><p class="text-right">{{ "£{:>0,.2f}".format(out_dict[k][2]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][2]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.1f}%".format(out_dict[k][3]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][4]/100) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][5]) }}</p></td>
       </tr>
     
     {% endfor %}
@@ -56,11 +62,29 @@
         <td><strong> TOTAL </strong></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
-        <td><strong><p class="text-right">{{ "£{:>0,.2f}".format(total) }}</strong></p></td>
+        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total) }}</strong></p></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
       </tr>
 
     </tbody>
   </table>
 </div>
+
+<p>Bitcoin block height is {{ blockh }} </p>
+<p>Next segwit activation period begins 477792, ends 479808</p>
+{%  if 477792 > blockh %}
+<p>So {{ 477792 - blockh }} before it begins, or {{ "{:0.1f}".format(((477792 - blockh)*10)/(60*24)) }} days</p>
+{% else %}
+<p>So {{ 479808 - blockh }} before it ends</p>
+{% endif %}
+
+
+<div class="container">
+  <img src="/static/pie.jpg" width="304" height="236"> 
+</div>
+
 </body>
+
 </html>
