@@ -20,7 +20,7 @@ def home():
 
 	pie =  pd.Series(values, index=names)
 
-	pie.plot(kind='pie').get_figure().savefig('pie.jpg')
+	pie.plot(kind='pie').get_figure().savefig('static/pie.jpg')
 
 	return render_template('table.html', 
 							out_dict=out_dict,
