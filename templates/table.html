@@ -30,14 +30,22 @@
 </nav>
 
 <div class="container">
-  <h2>Portfolio valuation</h2>
+  <h2>Portfolio valuation <small>at {{ timestamp }}</small></h2>
+  {% if debg %}
+  <h2>debug  {{ debg }}</h2>
+  {% endif %}
+
   <table class="table table-striped">
     <thead>
       <tr>
         <th>Coin</th>
         <th><p class="text-right">Price, £</p></th>
+        <th><p class="text-right">last, £</p></th>
+        <th><p class="text-right">change, £</p></th>
         <th><p class="text-right">Volume</p></th>
         <th><p class="text-right">Value, £</p></th>
+        <th><p class="text-right">last, £</p></th>
+        <th><p class="text-right">change, £</p></th>
         <th><p class="text-right">Share</p></th>
         <th><p class="text-right">Weight</p></th>
         <th><p class="text-right">£PPPW</p></th>
@@ -49,8 +57,12 @@
       <tr>
         <td>{{ k }}</td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][0]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][-1]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][0]-out_dict[k][-1]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][1]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][2]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][-1]*out_dict[k][1]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.0f}".format((out_dict[k][-1]*out_dict[k][1])-out_dict[k][2]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.1f}%".format(out_dict[k][3]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][4]/100) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][5]) }}</p></td>
@@ -62,7 +74,11 @@
         <td><strong> TOTAL </strong></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
         <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total) }}</strong></p></td>
+        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(last_total) }}</strong></p></td>
+        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total-last_total) }}</strong></p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
@@ -70,13 +86,19 @@
 
     </tbody>
   </table>
+
+  <h2><small>Last valued at {{ last_time }}</small></h2>
+
 </div>
-
-
 
 <div class="container">
-  <img src="/static/pie.jpg" width="304" height="236"> 
+  <img src="/static/history.jpg"> 
 </div>
+
+
+<!-- <div class="container">
+  <img src="/static/pie.jpg" width="304" height="236"> 
+</div> -->
 
 
 <p>Bitcoin block height is {{ blockh }} </p>
@@ -86,6 +108,8 @@
 {% else %}
 <p>So {{ 479808 - blockh }} before it ends</p>
 {% endif %}
+<p></p>
+<p>{{ timestamp }}</p>
 
 
 </body>
