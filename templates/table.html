@@ -72,6 +72,13 @@
   </table>
 </div>
 
+
+
+<div class="container">
+  <img src="/static/pie.jpg" width="304" height="236"> 
+</div>
+
+
 <p>Bitcoin block height is {{ blockh }} </p>
 <p>Next segwit activation period begins 477792, ends 479808</p>
 {%  if 477792 > blockh %}
@@ -80,10 +87,6 @@
 <p>So {{ 479808 - blockh }} before it ends</p>
 {% endif %}
 
-
-<div class="container">
-  <img src="/static/pie.jpg" width="304" height="236"> 
-</div>
 
 </body>
 
