@@ -40,11 +40,11 @@
       <tr>
         <th>Coin</th>
         <th><p class="text-right">Price, £</p></th>
-        <th><p class="text-right">last, £</p></th>
+        <!-- <th><p class="text-right">last, £</p></th> -->
         <th><p class="text-right">change, £</p></th>
         <th><p class="text-right">Volume</p></th>
         <th><p class="text-right">Value, £</p></th>
-        <th><p class="text-right">last, £</p></th>
+        <!-- <th><p class="text-right">last, £</p></th> -->
         <th><p class="text-right">change, £</p></th>
         <th><p class="text-right">Share</p></th>
         <th><p class="text-right">Weight</p></th>
@@ -57,11 +57,11 @@
       <tr>
         <td>{{ k }}</td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][0]) }}</p></td>
-        <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][-1]) }}</p></td>
+        <!-- <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][-1]) }}</p></td> -->
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][0]-out_dict[k][-1]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][1]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][2]) }}</p></td>
-        <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][-1]*out_dict[k][1]) }}</p></td>
+        <!-- <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][-1]*out_dict[k][1]) }}</p></td> -->
         <td><p class="text-right">{{ "{:>0,.0f}".format((out_dict[k][-1]*out_dict[k][1])-out_dict[k][2]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.1f}%".format(out_dict[k][3]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][4]/100) }}</p></td>
@@ -73,11 +73,11 @@
       <tr>
         <td><strong> TOTAL </strong></td>
         <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
+        <!-- <td><p class="text-right"> </p></td> -->
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
         <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total) }}</strong></p></td>
-        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(last_total) }}</strong></p></td>
+        <!-- <td><strong><p class="text-right">{{ "{:>0,.0f}".format(last_total) }}</strong></p></td> -->
         <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total-last_total) }}</strong></p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>

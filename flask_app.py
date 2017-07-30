@@ -51,12 +51,11 @@ def home():
 		last_time=0
 
 	val_hist = hist.T*vols
-	val_hist.plot(kind='line', stacked=True, ylim=0).get_figure().savefig('static/history.jpg')
+	val_hist.plot(kind='area', stacked=True, ylim=0).get_figure().savefig('static/history.jpg')
 
 	pie =  pd.Series(values, index=names)
 	pie.plot(kind='pie', 
 			figsize=(15,6)).get_figure().savefig('static/pie.jpg')
-
 
 
 	return render_template('table.html', 
