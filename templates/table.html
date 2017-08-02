@@ -31,6 +31,7 @@
 
 <div class="container">
   <h2>Portfolio valuation <small>at {{ timestamp }}</small></h2>
+  {{ last_total }}
   {% if debg %}
   <h2>debug  {{ debg }}</h2>
   {% endif %}
@@ -62,7 +63,7 @@
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][1]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][2]) }}</p></td>
         <!-- <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][-1]*out_dict[k][1]) }}</p></td> -->
-        <td><p class="text-right">{{ "{:>0,.0f}".format((out_dict[k][-1]*out_dict[k][1])-out_dict[k][2]) }}</p></td>
+        <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][2] - (out_dict[k][-1]*out_dict[k][1])) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.1f}%".format(out_dict[k][3]) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.2f}".format(out_dict[k][4]/100) }}</p></td>
         <td><p class="text-right">{{ "{:>0,.0f}".format(out_dict[k][5]) }}</p></td>

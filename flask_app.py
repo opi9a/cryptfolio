@@ -38,10 +38,17 @@ def home():
 		# debg = hist.columns
 
 		last_prices = hist.iloc[:,-1]
-		for coin in last_prices.index:
-			out_dict[coin].append(last_prices[coin])
-		hist.join(price_record).to_csv('hist.csv')
-		last_total = sum(last_prices*vols)
+		for coin in names:
+			try:
+				out_dict[coin].append(last_prices[coin])
+			except:
+				out_dict[coin].append('0')
+
+		hist.join(price_record, how='outer').to_csv('hist.csv')
+		if len(hist) == len(names):
+			last_total = sum(hist.loc[x][-1]*out_dict[x][1] for x in names)
+		else:
+			last_total = 0
 		last_time=hist.iloc[:,-1].name
 	else:
 		price_record.to_csv('hist.csv')
@@ -56,7 +63,6 @@ def home():
 	pie =  pd.Series(values, index=names)
 	pie.plot(kind='pie', 
 			figsize=(15,6)).get_figure().savefig('static/pie.jpg')
-
 
 	return render_template('table.html', 
 							out_dict=out_dict,
