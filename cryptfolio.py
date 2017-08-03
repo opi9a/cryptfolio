@@ -1,5 +1,7 @@
 #!/home/gav/anaconda3/python3
 
+# CRYPTOCOMPARE ONLY ACCEPTS 7 COINS
+
 import urllib.request
 import json
 from tkinter import *
@@ -34,6 +36,26 @@ def get_prices(coins, datafile):
             if entry['id'] == coin:
                 prices.append(float(entry['price_gbp']))
     return prices
+
+def get_hist(tickers, timestamp):
+    '''Returns a dictionary of coins with 1/price in GBP
+    '''
+    base = '''https://min-api.cryptocompare.com/data/pricehistorical?fsym=GBP&tsyms='''
+    ticks=",".join(tickers)
+    ts="".join(["&ts=", str(timestamp)])
+    url = "".join([base, ticks, ts])
+    req = requests.get(url).text
+    out = json.loads(req)['GBP']                  
+    return pd.DataFrame(out,index=[timestamp])                      
+
+
+def get_tickers(coins):
+	ticks = []
+	for c in coins:
+		req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
+		tick = json.loads(req)[0]['symbol']
+		ticks.append(tick)
+	return ticks
 
 def calc_values(coins, vols, prices):  
     values, total = [], 0.0
