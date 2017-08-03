@@ -2,11 +2,10 @@
 
 # CRYPTOCOMPARE ONLY ACCEPTS 7 COINS
 
-import urllib.request
+import requests
 import json
-from tkinter import *
-from tkinter.font import Font
 import datetime
+import pandas as pd
 
 def get_coins(conf="config.txt"):  
     '''Parses a config file to find coin names and numbers of units

@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 import datetime
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 
@@ -56,6 +57,8 @@ def home():
 			out_dict[coin].append(0)
 		last_total = 0
 		last_time=0
+
+	plt.style.use('ggplot')
 
 	val_hist = hist.T*vols
 	val_hist.plot(kind='area', stacked=True, ylim=0).get_figure().savefig('static/history.jpg')

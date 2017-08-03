@@ -8,7 +8,7 @@ import requests
 import json
 import cryptfolio as cf
 
-hist_start = int((datetime(2017,1,1)-datetime(1970,1,1)).total_seconds())
+hist_start = int((datetime(2017,7,7)-datetime(1970,1,1)).total_seconds())
 day_s = 24*60*60 #eg this is seconds per ~day~
 coins, vols = cf.get_coins('config.txt')
 ticks = cf.get_tickers(coins)
