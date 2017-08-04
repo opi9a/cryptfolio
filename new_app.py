@@ -1,7 +1,5 @@
 #!/home/gav/anaconda3/python3
 
-# CRYPTOCOMPARE ONLY ACCEPTS 7 COINS
-
 from datetime import datetime
 import pandas as pd
 import requests
@@ -13,16 +11,17 @@ tnow = int((datetime.now() - datetime(1970,1,1)).total_seconds())
 
 coin_data=get_data(depth=50)
 
-# update historical data, get ydays prices
+# TODO update historical data, get ydays prices
 
 # get coins and vols, and tickers of coins
+# CURRENTLY HAVE PLACEHOLDERS FOR YDAY PRICES
 coins, vols = cf.get_coins('config.txt')
 ticks = cf.get_tickers(coins)
 main_df=pd.DataFrame(vols, index=ticks, columns=['vols'])
 main_df=main_df.join(1/(cf.get_now_prices(ticks).T))
-main_df['price_change']=99 #price - last_price
+main_df['price_change']=main_df['prices'] - 99 # last_price
 main_df['values']=main_df['vols']*main_df['prices']
-main_df['val_change']=99 #value - vol*last_price
+main_df['val_change']=main_df['price_change']*main_df['vols']
 total=sum(main_df['values'])
 main_df['shares']=main_df['values']/total
        
@@ -30,12 +29,14 @@ caps={}
 for c in ticks:
     for d in coin_data:
         if d['symbol'] == c:
-            caps[c]=d['market_cap_gbp']
+            caps[c]=float(d['market_cap_gbp'])
        
-main_df=main_df.join(pd.Series(caps,name='cap'))
+main_df=main_df.join(pd.Series(caps,name='caps'))
+btc_proportion=main_df.loc['BTC','values']/main_df.loc['BTC','caps']
+main_df['weight']=((main_df['values']/main_df['caps'])/btc_proportion)
+main_df['£PPPW']=btc_proportion*main_df['caps']*0.01
 
-
-# calc and display table f(coins, prices_today, prices_yday, vols)
+# display table f(coins, prices_today, prices_yday, vols)
 
 # display historical graph
 
