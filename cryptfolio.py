@@ -21,11 +21,10 @@ def get_coins(conf="config.txt"):
                 i+=1
     return c, v
 
-def get_data(target = "long_return.txt"):
-    source = "https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit=45"
-    urllib.request.urlretrieve(source, target)
-    with open(target) as data_file:
-        data = json.load(data_file)       
+def get_data(depth=45):
+    base="https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit="
+    req = requests.get("".join([base,str(depth)]))
+    data = json.loads(req.text)       
     return data
 
 def get_prices(coins, datafile):
@@ -36,18 +35,30 @@ def get_prices(coins, datafile):
                 prices.append(float(entry['price_gbp']))
     return prices
 
-def get_hist(tickers, timestamp):
+def get_hist(tickers, timestamp, max_q=7):
     '''Returns a dictionary of coins with 1/price in GBP
     '''
     base = '''https://min-api.cryptocompare.com/data/pricehistorical?fsym=GBP&tsyms='''
-    ticks=",".join(tickers)
-    ts="".join(["&ts=", str(timestamp)])
-    url = "".join([base, ticks, ts])
-    req = requests.get(url).text
-    out = json.loads(req)['GBP']                  
-    return pd.DataFrame(out,index=[timestamp])                      
+    last=0
+    out=pd.DataFrame(index=[timestamp])
+    while last<len(tickers):
+        c_slice = slice(last, 1+min(last+max_q, len(tickers)))
+#        print(c_slice)
+        ticks=",".join(tickers[c_slice])
+        ts="".join(["&ts=", str(timestamp)])
+        url = "".join([base, ticks, ts])
+#        print(url)
+        req = requests.get(url).text
+#        print(req)
+        out_dict = json.loads(req)['GBP'] 
+#        print(out_dict)
+        out_df = pd.DataFrame(out_dict,index=[timestamp])
+#        print(out_df)
+        out=out.join(out_df)
+        last += max_q+1 
 
-
+    return out
+        
 def get_tickers(coins):
 	ticks = []
 	for c in coins:
@@ -55,6 +66,11 @@ def get_tickers(coins):
 		tick = json.loads(req)[0]['symbol']
 		ticks.append(tick)
 	return ticks
+
+def get_now_prices(ticks):
+    base = "https://min-api.cryptocompare.com/data/price?fsym=GBP&tsyms="
+    req=requests.get("".join([base,",".join(ticks)])).text
+    return(pd.DataFrame(json.loads(req),index=['prices']))
 
 def calc_values(coins, vols, prices):  
     values, total = [], 0.0
@@ -153,9 +169,8 @@ coinmarket.cap api, and change the 'limit' argument")
     return coin_dict, total
 
 def get_blockh():
-    with urllib.request.urlopen('https://blockchain.info/q/getblockcount') as f:
-        h = int(f.read())
-
+    req=requests.get('https://blockchain.info/q/getblockcount').text
+    h = json.loads(req)
     return h
 
 
