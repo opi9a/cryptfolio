@@ -38,11 +38,11 @@
         <!-- <th><p class="text-right">last, £</p></th> -->
         <th><p class="text-right">24h change, £</p></th>
         <th><p class="text-right">Price, $</p></th>
-        <th><p class="text-right">24h change, $</p></th>
+        <th><p class="text-right">24h change, %</p></th>
         <th><p class="text-right">Volume</p></th>
         <th><p class="text-right">Value, £</p></th>
         <!-- <th><p class="text-right">last, £</p></th> -->
-        <th><p class="text-right">24h change, £</p></th>
+        <th><p class="text-right">24h change, %</p></th>
         <th><p class="text-right">Share</p></th>
         <th><p class="text-right">Weight</p></th>
         <th><p class="text-right">£PPPW</p></th>        
@@ -55,25 +55,24 @@
               <td>{{ df.loc[i,'ticks'] }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_gbp']) }}</td>
 
-                {% if df.loc[i,'ch24h_gbp']>0 %} <td class="text-right bg-success">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
-                {% elif df.loc[i,'ch24h_gbp']<0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
-                {% else %} <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
-                {% endif %}
+              {% if df.loc[i,'ch24h_gbp']>0 %} <td class="text-right bg-success">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              {% elif df.loc[i,'ch24h_gbp']<0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              {% else %} <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              {% endif %}
 
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_usd']) }}</td>
- 
-                {% if df.loc[i,'ch24h_usd']>0 %} <td class="text-right bg-success">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_usd']) }}</td>
-                {% elif df.loc[i,'ch24h_usd']<0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_usd']) }}</td>
-                {% else %} <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_usd']) }}</td>
-                {% endif %}
-
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'vols']) }}</td>
               <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'values']) }}</td>
 
-                {% if df.loc[i,'value_24h_ch']>0 %} <td class="text-right bg-success">{{ "{:>0,.2f}".format(df.loc[i,'value_24h_ch']) }}</td>
-                {% elif df.loc[i,'value_24h_ch']<0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}".format(df.loc[i,'value_24h_ch']) }}</td>
-                {% else %} <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'value_24h_ch']) }}</td>
-                {% endif %}
+              {% if df.loc[i,'value_24h_ch']>0 %} <td class="text-right bg-success">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% elif df.loc[i,'value_24h_ch']<0 %} <td class="text-right bg-danger">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% else %} <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% endif %}
+
+              {% if df.loc[i,'val_pcent_24h_ch']>0 %} <td class="text-right bg-success">{{ "{:>0,.2f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% elif df.loc[i,'val_pcent_24h_ch']<0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% else %} <td class="text-right">{{ "{:>0,.2f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% endif %}
 
               <td class="text-right">{{ "{:>0,.1f}%".format(df.loc[i,'shares']*100) }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'weight']) }}</td>
@@ -90,14 +89,18 @@
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
         <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total) }}</strong></p></td>
 
 
-                {% if total_ch >0 %} <td class="text-right bg-success">{{ "{:>0,.2f}".format(total_ch) }}</td>
-                {% elif total_ch <0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}".format(total_ch) }}</td>
-                {% else %} <td class="text-right">{{ "{:>0,.2f}".format(total_ch) }}</td>
-                {% endif %}
+            {% if total_ch >0 %} <td class="text-right bg-success">{{ "{:>0,.0f}".format(total_ch) }}</td>
+            {% elif total_ch <0 %} <td class="text-right bg-danger">{{ "{:>0,.0f}".format(total_ch) }}</td>
+            {% else %} <td class="text-right">{{ "{:>0,.0f}".format(total_ch) }}</td>
+            {% endif %}
+
+            {% if total_perc_ch >0 %} <td class="text-right bg-success">{{ "{:>0,.2f}%".format(total_perc_ch*100) }}</td>
+            {% elif total_perc_ch <0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}%".format(total_perc_ch*100) }}</td>
+            {% else %} <td class="text-right">{{ "{:>0,.2f}%".format(total_perc_ch*100) }}</td>
+            {% endif %}
 
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>

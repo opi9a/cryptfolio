@@ -33,11 +33,15 @@ def home():
 	df=pd.DataFrame(basics).set_index('coins')
 
 	df=df.join(get_multi(list(df['ticks'])),on='ticks')
+	df['pcent_24h_ch']=df['ch24h_gbp']/(df['ch24h_gbp']+df['prices_gbp'])
 
 	df['values']=df['prices_gbp']*df['vols']
 	total = sum(df['values'])
 	df['value_24h_ch']=df['ch24h_gbp']*df['vols']
+	df['val_pcent_24h_ch']=df['value_24h_ch']/(df['value_24h_ch']+df['values'])
+
 	total_ch = sum(df['value_24h_ch'])
+	total_perc_ch = total_ch/(total_ch+total)
 
 	df['shares']=df['values']/total
 
@@ -49,7 +53,7 @@ def home():
 
 	return render_template('test_frame.html', 
 							df=df, 
-							total=total, total_ch=total_ch,
+							total=total, total_ch=total_ch, total_perc_ch=total_perc_ch,
 							t_now=t_now)
 
 @app.route('/reset/')
