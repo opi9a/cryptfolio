@@ -1,0 +1,88 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}test_app{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Cryptfolio</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/">Portfolio Valuation</a></li>
+      <li><a href="#">Historical</a></li>
+    </ul>
+        <ul class="nav navbar-nav navbar-right">
+      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Aliens</a></li>
+      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Way Out</a></li>
+    </ul>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Portfolio valuation <small> valued at {{ t_now }}</small></h1>
+    </div>
+</div>
+
+<div class="container">
+  <table class="table table-striped">
+      <thead>
+        <th><p class="text-left">Coin</p></th>
+        <th><p class="text-left">Ticker</p></th>
+        <th><p class="text-right">Price, £</p></th>
+        <!-- <th><p class="text-right">last, £</p></th> -->
+        <th><p class="text-right">24h change, £</p></th>
+        <th><p class="text-right">Volume</p></th>
+        <th><p class="text-right">Value, £</p></th>
+        <!-- <th><p class="text-right">last, £</p></th> -->
+        <th><p class="text-right">24h change, £</p></th>
+        <th><p class="text-right">Share</p></th>
+        <th><p class="text-right">Weight</p></th>
+        <th><p class="text-right">£PPPW</p></th>        
+      </thead>
+
+      <tbody>
+        {% for i in df.index %}
+            <tr>
+              <td>{{ i.title() }}</td>
+              <td>{{ df.loc[i,'ticks'] }}</td>
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_gbp']) }}</td>
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'vols']) }}</td>
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'values']) }}</td>
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              <td class="text-right">{{ "{:>0,.1f}%".format(df.loc[i,'shares']*100) }}</td>
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'weight']) }}</td>
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'£PPPW']) }}</td>
+
+
+            </tr>
+        {% endfor %}
+
+      <tr>
+        <td><strong> TOTAL </strong></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total) }}</strong></p></td>
+        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total_ch) }}</strong></p></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+        <td><p class="text-right"> </p></td>
+      </tr>
+
+      </tbody>
+
+  </table>
+</div>
+
+<div class="container">
+    <a href="/reset/"">Reload coins</a>
+</div>
+
+
+{% endblock %}

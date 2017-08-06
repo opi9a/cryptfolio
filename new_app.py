@@ -12,11 +12,14 @@ tnow = int((datetime.now() - datetime(1970,1,1)).total_seconds())
 coin_data=get_data(depth=50)
 
 # TODO update historical data, get ydays prices
+# TODO 'too many figures' warning from matplotlib. 
+# Being closed on reload?
 
 # get coins and vols, and tickers of coins
 # CURRENTLY HAVE PLACEHOLDERS FOR YDAY PRICES
 coins, vols = cf.get_coins('config.txt')
 ticks = cf.get_tickers(coins)
+# TODO Make ticks a dict, to assoc with coin name (poss in index)
 main_df=pd.DataFrame(vols, index=ticks, columns=['vols'])
 main_df=main_df.join(1/(cf.get_now_prices(ticks).T))
 main_df['price_change']=main_df['prices'] - 99 # last_price
@@ -30,7 +33,8 @@ for c in ticks:
     for d in coin_data:
         if d['symbol'] == c:
             caps[c]=float(d['market_cap_gbp'])
-       
+
+# TODO check there is btc in order to calc weight       
 main_df=main_df.join(pd.Series(caps,name='caps'))
 btc_proportion=main_df.loc['BTC','values']/main_df.loc['BTC','caps']
 main_df['weight']=((main_df['values']/main_df['caps'])/btc_proportion)

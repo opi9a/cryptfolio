@@ -7,6 +7,14 @@ import json
 import datetime
 import pandas as pd
 
+def get_basics(conf='config.txt'):
+    print('\nin read_config\n')
+    out = {}
+    out['coins'], out['vols'] = get_coins(conf)
+    out['ticks'] = get_tickers(out['coins'])
+    return out
+
+
 def get_coins(conf="config.txt"):  
     '''Parses a config file to find coin names and numbers of units
     Returns two lists:  the coin names and the numbers of units (aka vols)
@@ -59,18 +67,46 @@ def get_hist(tickers, timestamp, max_q=7):
 
     return out
         
+# def get_tickers(coins):
+# 	ticks = []
+# 	for c in coins:
+# 		req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
+# 		tick = json.loads(req)[0]['symbol']
+# 		ticks.append(tick)
+# 	return ticks
+
 def get_tickers(coins):
-	ticks = []
-	for c in coins:
-		req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
-		tick = json.loads(req)[0]['symbol']
-		ticks.append(tick)
-	return ticks
+    ticks = []
+    for c in coins:
+        req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
+        tick = json.loads(req)[0]['symbol']
+        ticks.append(tick)
+    return ticks
+
+
+def get_multi(ticks):
+    base = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms="
+    content = ",".join(ticks)
+    end = "&tsyms=GBP,USD"
+    api_str = "".join([base, content, end])
+    req=requests.get(api_str).text
+    mult = json.loads(req)['RAW']
+    
+    mdf = pd.DataFrame(index=ticks)
+
+    mdf['prices_gbp'] = [mult[t]['GBP']['PRICE'] for t in ticks]
+    mdf['prices_usd'] = [mult[t]['USD']['PRICE'] for t in ticks]
+    mdf['cap_gbp'] = [mult[t]['GBP']['MKTCAP'] for t in ticks]
+    mdf['cap_usd'] = [mult[t]['USD']['MKTCAP'] for t in ticks]
+    mdf['ch24h_gbp'] = [mult[t]['GBP']['CHANGE24HOUR'] for t in ticks]
+    mdf['ch24h_usd'] = [mult[t]['USD']['CHANGE24HOUR'] for t in ticks]
+    
+    return mdf
 
 def get_now_prices(ticks):
     base = "https://min-api.cryptocompare.com/data/price?fsym=GBP&tsyms="
     req=requests.get("".join([base,",".join(ticks)])).text
-    return(pd.DataFrame(json.loads(req),index=['prices']))
+    return(1/pd.DataFrame(json.loads(req),index=['prices']))
 
 def calc_values(coins, vols, prices):  
     values, total = [], 0.0
