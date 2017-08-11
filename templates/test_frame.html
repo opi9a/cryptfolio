@@ -1,8 +1,21 @@
 {% extends "bootstrap/base.html" %}
 
+{% block head %}
+
+{{ super() }}
+  <meta http-equiv="refresh" content="300"> 
+{% endblock %}  
+
+
 {% block title %}
-  £{{ "{:,.0f}".format(total) }}
+
+{{ "£{:0,.0f}".format(total) }}
+
 {% endblock %}
+
+<head>
+<link rel="shortcut icon" href="/static/favicon.ico">
+</head>
 
 {% block navbar %}
 <nav class="navbar navbar-default">
@@ -25,21 +38,22 @@
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1>Portfolio valuation <small> at {{ t_now }}</small></h1>
+        <h1>Portfolio Value <small> at {{ t_now }}</small></h1>
     </div>
 </div>
 
 <div class="container">
   <table class="table table-striped">
       <thead>
+<!-- table header row -->
         <th><p class="text-left">Coin</p></th>
         <th><p class="text-left">Ticker</p></th>
         <th><p class="text-right">Price, £</p></th>
-        <th><p class="text-right">24h change, £</p></th>
+        <th><p class="text-right">change</p></th>
         <th><p class="text-right">Price, $</p></th>
         <th><p class="text-right">Volume</p></th>
         <th><p class="text-right">Value, £</p></th>
-        <th><p class="text-right">24h change, £</p></th>
+        <th><p class="text-right">change</p></th>
         <th><p class="text-right">%</p></th>
         <th><p class="text-right">Share</p></th>
         <th><p class="text-right">Weight</p></th>
@@ -47,12 +61,14 @@
       </thead>
 
       <tbody>
+<!-- table body - loop thru coins -->
         {% for i in df.index %}
             <tr>
               <td>{{ i.title() }}</td>
               <td>{{ df.loc[i,'ticks'] }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_gbp']) }}</td>
 
+<!-- colour change block -->
               {% if df.loc[i,'ch24h_gbp']>0 %} <td class="text-right bg-success">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
               {% elif df.loc[i,'ch24h_gbp']<0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
               {% else %} <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
@@ -62,6 +78,7 @@
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'vols']) }}</td>
               <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'values']) }}</td>
 
+<!-- colour change block -->
               {% if df.loc[i,'value_24h_ch']>0 %} <td class="text-right bg-success">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
               {% elif df.loc[i,'value_24h_ch']<0 %} <td class="text-right bg-danger">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
               {% else %} <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
@@ -80,6 +97,7 @@
             </tr>
         {% endfor %}
 
+<!-- bottom row of table -->
       <tr>
         <td><strong> TOTAL </strong></td>
         <td><p class="text-right"> </p></td>
@@ -113,6 +131,5 @@
 <div class="container">
     <a href="/reset/"">reload portfolio</a>
 </div>
-
 
 {% endblock %}

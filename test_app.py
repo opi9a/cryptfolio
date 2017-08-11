@@ -11,7 +11,7 @@ app.config['SECRET_KEY']="AJFPRG"
 bootstrap = Bootstrap(app)
 
 @app.route('/')
-def home():
+def home(conf="config.txt"):
 
 	t_base = session.setdefault('timestamp', 
 					datetime.now().strftime('%a %-d %b, %-H:%M:%S'))
@@ -23,7 +23,7 @@ def home():
 		basics=session['basics']
 
 	else:
-		basics=get_basics()#[ticks,vols]
+		basics=get_basics(conf)#[ticks,vols]
 		session['basics']=basics
 
 	# Get 24h change, mktcap
@@ -48,8 +48,6 @@ def home():
 	btc_proportion=df.loc['bitcoin','values']/df.loc['bitcoin','cap_gbp']
 	df['weight']=((df['values']/df['cap_gbp'])/btc_proportion)
 	df['£PPPW']=btc_proportion*df['cap_gbp']*0.01
-
-
 
 	return render_template('test_frame.html', 
 							df=df, 

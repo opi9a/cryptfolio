@@ -78,9 +78,12 @@ def get_hist(tickers, timestamp, max_q=7):
 def get_tickers(coins):
     ticks = []
     for c in coins:
-        req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
-        tick = json.loads(req)[0]['symbol']
-        ticks.append(tick)
+        try:
+            req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
+            tick = json.loads(req)[0]['symbol']
+            ticks.append(tick)
+        except:
+            print("couldn't find a coin called ", c)
     return ticks
 
 
