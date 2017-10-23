@@ -62,8 +62,6 @@ def home(conf="config.txt"):
 
 	temp_dict = {df.loc[i,'ticks']:df.loc[i,'values'] for i in df.index.values}
 
-	print(temp_dict)
-
 	return render_template('test_frame.html', 
 							df=df, 
 							total=total, total_ch=total_ch, total_perc_ch=total_perc_ch,
@@ -80,8 +78,6 @@ def nfl():
 	
 	start_day = datetime.now().weekday()
 	out = nflsky.get_shows(7)
-	print(out)
-	print(nflsky.tidy_shows(out))
 	return render_template('nflsky.html', out=nflsky.tidy_shows(out), start_day=calendar.day_name[start_day])
 
 

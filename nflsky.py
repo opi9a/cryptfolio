@@ -30,19 +30,14 @@ def tidy_shows(raw_shows):
 		# make an entry in the final dictionary (for the day)
 		tidy_out[day] = dict(day=raw_shows[day]['day'], games=[])
 		showstrings = set()
-		print("the day is ", raw_shows[day]['day'])
-		print("length of games is ", len(raw_shows[day]['games']))
 
 		# go through the games for that day in the raw output
 		for i, raw_show in enumerate(raw_shows[day]['games']):
-			print("In game number ", i)
-			print("number of showstrings is ", len(showstrings))
 			showstring = raw_show['raw_game'] + " " + raw_show['raw_time']
-			print("looking at ", showstring)
 
 			# test if it's already been put in the day's shows
 			if showstring in showstrings:
-				print("found ", showstring, " in showstrings")
+				pass
 
 			else:
 				# build a show dict to append to the games list
@@ -69,15 +64,11 @@ def tidy_shows(raw_shows):
 				# append it to the games list
 				tidy_out[day]['games'].append(show)
 
-				print("adding showstring ", showstring)
 				showstrings.add(showstring)
-				print("number of showstrings is ", len(showstrings))
 
-		print("showstrings for ", day, " are: ", showstrings)
 	
 	return tidy_out
 				
-
 
 
 
@@ -99,9 +90,16 @@ def get_shows(days_hence):
 		out[date] = dict(day=calendar.day_name[(start_weekday+d)%7])
 		out[date]['games'] = []
 		
+		print("Getting shows for", out[date]['day'], end=".. ")
+		
 		url = "".join([url_base, date])
-		r = requests.get(url)
-		soup = BeautifulSoup(r.text, 'html.parser')
+		
+		try:
+			r = requests.get(url)
+			soup = BeautifulSoup(r.text, 'html.parser')
+			print("..OK")
+
+		except: print(".. failed")
 
 		for a in soup.find_all('a'):
 			txt = str(a).lower()
