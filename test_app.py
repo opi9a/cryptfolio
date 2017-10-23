@@ -79,7 +79,7 @@ def reset():
 def nfl():
 	
 	start_day = datetime.now().weekday()
-	out = nflsky.get_shows(6)
+	out = nflsky.get_shows(7)
 	print(out)
 	print(nflsky.tidy_shows(out))
 	return render_template('nflsky.html', out=nflsky.tidy_shows(out), start_day=calendar.day_name[start_day])
