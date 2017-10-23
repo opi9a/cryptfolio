@@ -4,6 +4,64 @@ from datetime import datetime as dt
 from collections import OrderedDict
 import calendar
 
+
+def tidy_shows(raw_shows):
+	
+	tidy_out = OrderedDict()
+
+	for day in raw_shows:
+		# make an entry in the final dictionary (for the day)
+		tidy_out[day] = dict(day=raw_shows[day]['day'], games=[])
+		showstrings = set()
+		print("the day is ", raw_shows[day]['day'])
+		print("length of games is ", len(raw_shows[day]['games']))
+
+		# go through the games for that day in the raw output
+		for i, raw_show in enumerate(raw_shows[day]['games']):
+			print("In game number ", i)
+			print("number of showstrings is ", len(showstrings))
+			showstring = raw_show['raw_game'] + " " + raw_show['raw_time']
+			print("looking at ", showstring)
+
+			# test if it's already been put in the day's shows
+			if showstring in showstrings:
+				print("found ", showstring, " in showstrings")
+
+			else:
+				# build a show dict to append to the games list
+				show={}
+
+				if "redzone" in raw_show['raw_game'].lower():
+					show['type'] = 'redzone'
+				
+				elif raw_show['raw_game'].startswith("Live"):
+					show['type'] = 'live'
+
+
+				elif "hlts" in raw_show['raw_game'].lower():
+					show['type'] = 'highlights'
+
+				else:
+					show['type'] = 'unknown'
+				
+				show['game'] = raw_show['raw_game']
+				show['time'] = raw_show['raw_time'].split(",")[0]
+
+				# append it to the games list
+				tidy_out[day]['games'].append(show)
+
+				print("adding showstring ", showstring)
+				showstrings.add(showstring)
+				print("number of showstrings is ", len(showstrings))
+
+		print("showstrings for ", day, " are: ", showstrings)
+	
+	return tidy_out
+				
+
+
+
+
 def get_shows(days_hence):
 
 	url_base = "http://www.skysports.com/watch/tv-guide/"
@@ -37,20 +95,6 @@ def get_shows(days_hence):
 				
 				out[date]['games'].append(dict(raw_game=show[0],
 										raw_time=show[1]))
-
-	for day in out:
-		for game in out[day]['games']:
-			if game['raw_game'].startswith("Live"):
-				game['type'] = 'live'
-			elif game['raw_game'].endswith("Hlts"):
-				game['type'] = 'highlights'
-			else:
-				game['type'] = 'unknown'
-			game['time'] = game['raw_time'].split(",")[0]
-
-			# game['day'] = calendar.day_name[]
-
-				
 
 		last_date = date
 

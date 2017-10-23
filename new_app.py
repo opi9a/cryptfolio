@@ -46,7 +46,6 @@ main_df['£PPPW']=btc_proportion*main_df['caps']*0.01
 
 # watch out for changes in order - do lookups by name not index
 
-hist_start = int((datetime(2017,7,7)-datetime(1970,1,1)).total_seconds())
 day_s = 24*60*60 #eg this is seconds per ~day~
 
 # need to process ticks in batch of 7 (or query max)
@@ -55,10 +54,11 @@ day_s = 24*60*60 #eg this is seconds per ~day~
 try:
     hist_df = pd.read_csv('price_history.csv', index_col=0)
 except:
+	hist_start = int((datetime(2017,7,7)-datetime(1970,1,1)).total_seconds())
     hist = cf.get_hist(ticks, hist_start)
     hist_df = pd.DataFrame(hist, [hist_start])
 
-time_point = hist_df.iloc[-1].name + day_s
+time_point = hist_df.iloc[-1].name + day_s # start
 #
 while time_point < tnow:
     print(time_point)
