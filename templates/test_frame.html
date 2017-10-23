@@ -1,39 +1,13 @@
-{% extends "bootstrap/base.html" %}
-
-{% block head %}
-
-{{ super() }}
-  <meta http-equiv="refresh" content="300"> 
-{% endblock %}  
+{% extends "layout.html" %}
 
 
 {% block title %}
+{{ super() }}
 
 {{ "£{:0,.0f}".format(total) }}
 
 {% endblock %}
 
-<head>
-<link rel="shortcut icon" href="/static/favicon.ico">
-</head>
-
-{% block navbar %}
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">Cryptfolio</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li><a href="/">Portfolio Valuation</a></li>
-      <li><a href="#">Historical</a></li>
-    </ul>
-        <ul class="nav navbar-nav navbar-right">
-      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Aliens</a></li>
-      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Way Out</a></li>
-    </ul>
-  </div>
-</nav>
-{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -63,7 +37,7 @@
       <tbody>
 <!-- table body - loop thru coins -->
         {% for i in df.index %}
-            <tr>
+            <tr class={{i}}>
               <td>{{ i.title() }}</td>
               <td>{{ df.loc[i,'ticks'] }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_gbp']) }}</td>
@@ -131,5 +105,32 @@
 <div class="container">
     <a href="/reset/"">reload portfolio</a>
 </div>
+
+<script type="text/javascript">
+  
+  var in_data = {{ temp_dict | safe}};
+
+  var coins = [];
+  var vals = []; 
+
+  for (var i = 0; i < in_data.length; i++) {
+    coins.push(in_data[i].id);
+    vals.push(in_data[i].msg);
+  }
+
+
+  var canvas = d3.select("body")
+                .append("svg")
+                .attr("width", 500)
+                .attr("height", 200);
+
+
+
+  console.log(in_data, coins, vals);
+
+
+
+
+</script>
 
 {% endblock %}

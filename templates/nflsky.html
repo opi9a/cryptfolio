@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+
+
+{% block title %}
+{{ super() }}
+
+NFL on sky
+
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1> <small> Games as of {{ start_day }}</small></h1>
+    </div>
+</div>
+
+<div class="container">
+  <table class="table table-striped">
+      <thead>
+<!-- table header row -->
+        <th><p>Day</p></th>
+        <th><p>Game</p></th>
+        <th><p>Type</p></th>
+        <th><p>Time</p></th>
+     
+      </thead>
+
+      <tbody>
+<!-- table body - loop thru coins -->
+        {% for d in out %}
+            <tr>
+              <td><div>{{out[d]['day']}}, </div>
+                  <div>{{ d }}</div>
+                  </td>
+
+              <td>{% for game in out[d]['games'] %}
+                <div>{{ game['raw_game'] }}</div>
+                {% endfor %}
+                </td>
+
+              <td>{% for game in out[d]['games'] %}
+                <div>{{ game['type'] }}</div>
+                {% endfor %}
+                </td>
+
+              <td>{% for game in out[d]['games'] %}
+                <div>{{ game['time'] }}</div>
+                {% endfor %}
+                </td>
+
+            </tr>
+        {% endfor %}
+
+
+
+      </tbody>
+
+  </table>
+</div>
+
+
+
+
+{% endblock %}
