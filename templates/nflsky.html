@@ -14,7 +14,7 @@ NFL on sky
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1> <small> Games as of {{ start_day }}</small></h1>
+        <h1> <small> Games this week, starting {{ start_day }}</small></h1>
     </div>
 </div>
 
@@ -23,9 +23,9 @@ NFL on sky
       <thead>
 <!-- table header row -->
         <th><p>Day</p></th>
-        <th><p>Programme Name</p></th>
+        <th><p>Game</p></th>
         <th><p>Type</p></th>
-        <th><p>Time</p></th>
+        <th><p class="text-right">Time</p></th>
      
       </thead>
 
@@ -33,7 +33,7 @@ NFL on sky
 <!-- table body - loop thru coins -->
         {% for d in out %}
             <tr>
-              <td><div>{{out[d]['day']}}, </div>
+              <td><div><strong>{{out[d]['day']}}</strong>,</div>
                   <div>{{ d }}</div>
                   </td>
 
@@ -48,7 +48,7 @@ NFL on sky
                 </td>
 
               <td>{% for game in out[d]['games'] %}
-                <div>{{ game['time'] }}</div>
+                <div class="text-right">{{ game['time'] }}</div>
                 {% endfor %}
                 </td>
 

@@ -5,6 +5,23 @@ from collections import OrderedDict
 import calendar
 
 
+def clean_game(game):
+	if game.endswith("Hlts"):
+		game = game[:-4]
+	if game.startswith("Live NFL"):
+		game = game[8:]
+	if game.startswith("NFL"):
+		game = game[4:]	
+	if game.startswith("Hlts"):
+		game = game[4:]
+	if game.startswith(":"):
+		game = game[1:]		
+
+	return(game.strip())
+
+
+
+
 def tidy_shows(raw_shows):
 	
 	tidy_out = OrderedDict()
@@ -30,22 +47,24 @@ def tidy_shows(raw_shows):
 			else:
 				# build a show dict to append to the games list
 				show={}
-
-				if "redzone" in raw_show['raw_game'].lower():
-					show['type'] = 'redzone'
 				
-				elif raw_show['raw_game'].startswith("Live"):
+				show['game'] = clean_game(raw_show['raw_game'])
+				
+				t = raw_show['raw_time'].split(",")[0]
+				show['time'] = " ".join([t[:-2], " ", t[-2:]])
+
+				if raw_show['raw_game'].startswith("Live"):
 					show['type'] = 'live'
 
 
 				elif "hlts" in raw_show['raw_game'].lower():
-					show['type'] = 'highlights'
+					show['type'] = 'HIGHLIGHTS'
 
 				else:
 					show['type'] = 'unknown'
+					show['game'] = raw_show['raw_game']
+
 				
-				show['game'] = raw_show['raw_game']
-				show['time'] = raw_show['raw_time'].split(",")[0]
 
 				# append it to the games list
 				tidy_out[day]['games'].append(show)
