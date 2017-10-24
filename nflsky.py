@@ -68,6 +68,7 @@ def tidy_shows(raw_shows):
 				show['game'] = clean_game(raw_show['raw_game'])		
 				show['time'] = " ".join([t_raw[:-2], " ", t_raw[-2:]])
 				show['t_mins'] = t_mins
+				show['channel'] = raw_show['channel']
 
 				if raw_show['raw_game'].startswith("Live"):
 					show['type'] = 'live'
@@ -106,6 +107,22 @@ def get_shows(days_hence):
 	out = OrderedDict()
 	last_date = None
 
+	# get list of channels (ordered)
+	print("getting initial page for channel list..")
+	try:
+		r = requests.get(url_base+"".join([str(start_day), mon_yr]))
+		soup = BeautifulSoup(r.text, 'html.parser')
+		print("..OK")
+
+	except: 
+		print(".. failed")
+		return 1
+	
+	chan_list = [x.split(" src=")[0][1:-1] for x in str(soup.find_all('img')).split("alt=")][1:-1]
+	print("chan list is ", chan_list)
+
+
+	# now go through for real
 	for d in range(days):
 		date = "".join([str(start_day+d), mon_yr])
 		
@@ -123,17 +140,28 @@ def get_shows(days_hence):
 
 		except: print(".. failed")
 
-		for a in soup.find_all('a'):
-			txt = str(a).lower()
-			show = []
-			if "nfl" in txt and (("hlts" in txt) or ("live" in txt)):
-				for h in a.find_all('h4'):
-					show.append(h.text.strip())
-				for p in a.find_all('p'):
-					show.append(p.text.strip())
-				
-				out[date]['games'].append(dict(raw_game=show[0],
-										raw_time=show[1]))
+		# get the shows for each channel
+		chan_shows = []
+		for i, tag in enumerate(soup.find_all("div", class_='row-table')):
+		    shows = []
+		    shows.extend([h.text.strip() for h in tag.find_all("h4")])
+		    times = []
+		    times.extend([p.text.strip() for p in tag.find_all("p")])
+		    chan_shows.append(list(zip(shows, times)))
+		chan_shows = chan_shows[1:]		
+
+		# winnow down to only nfl shows
+		nfl_shows = []
+		for c in chan_shows:
+		    nfl_shows.append([x for x in c if 
+		    		("nfl" in x[0].lower()) and("live" in x[0].lower() or "hlts" in x[0].lower())])
+
+
+		# now append out list
+		for i, chan in enumerate(chan_list):
+		    for s in nfl_shows[i]:
+		        out[date]['games'].append(dict(raw_game=s[0], raw_time=s[1], channel=chan))
+		
 
 		last_date = date
 

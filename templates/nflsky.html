@@ -27,6 +27,7 @@ NFL on sky
         <th><p>Day</p></th>
         <th><p>Game</p></th>
         <th><p>Type</p></th>
+        <th><p>Channel</p></th>
         <th><p class="text-right">Time</p></th>
      
       </thead>
@@ -45,6 +46,11 @@ NFL on sky
 
               <td>{% for game in out[d]['games'] %}
                 <div class={{ game['type'] }}>{{ game['type'] }}</div>
+                {% endfor %}
+                </td>
+              
+              <td>{% for game in out[d]['games'] %}
+                <div class={{ game['type'] }}>{{ game['channel'] }}</div>
                 {% endfor %}
                 </td>
 
