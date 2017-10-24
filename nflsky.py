@@ -20,27 +20,50 @@ def clean_game(game):
 	return(game.strip())
 
 
+def get_time_mins(string):
+    ampm = string[-2:]
+    mins = int(string.split(":")[1][:-2])
+    hours = int(string.split(":")[0])
+    if ampm == "pm": hours = hours + 12
+    return (hours*60) + mins
 
 
 def tidy_shows(raw_shows):
 	
 	tidy_out = OrderedDict()
+	time_now_mins = (dt.now().hour * 60) + dt.now().minute
+	today = "-".join([str(dt.now().day), str(dt.now().month), str(dt.now().year)])
+	
 
 	for day in raw_shows:
 		# make an entry in the final dictionary (for the day)
+		print("\nnew day: ", day)
 		tidy_out[day] = dict(day=raw_shows[day]['day'], games=[])
 		showstrings = set()
 
 		# go through the games for that day in the raw output
 		for i, raw_show in enumerate(raw_shows[day]['games']):
-			showstring = raw_show['raw_game'] + " " + raw_show['raw_time']
+			ignore = False
+			showstring = (raw_show['raw_game'] + " " + raw_show['raw_time']).strip()
+			print("\nShowstrings are", showstrings)
+			print("This showstring is", showstring)
+
 
 			# test if it's already been put in the day's shows
 			if showstring in showstrings:
-				pass
+				print("it's already in")
+				ignore = True
 
-			else:
-				# build a show dict to append to the games list
+			# test if it's in the past
+			if day == today:
+				t_mins = get_time_mins(raw_show['raw_time'].split(",")[0])
+				if t_mins == 720: t_mins = 0 # prev midnight
+				if (t_mins < time_now_mins - 180): #
+					ignore = True
+
+
+			if not ignore:
+				print("have a show")
 				show={}
 				
 				show['game'] = clean_game(raw_show['raw_game'])
@@ -63,8 +86,9 @@ def tidy_shows(raw_shows):
 
 				# append it to the games list
 				tidy_out[day]['games'].append(show)
-
+				print("adding a showstring")
 				showstrings.add(showstring)
+				print("showstrings now, ", showstrings)
 
 	
 	return tidy_out
