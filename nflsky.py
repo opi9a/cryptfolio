@@ -3,6 +3,7 @@ import requests
 from datetime import datetime as dt
 from collections import OrderedDict
 import calendar
+from pprint import pprint
 
 
 def clean_game(game):
@@ -45,19 +46,17 @@ def tidy_shows(raw_shows):
 		for i, raw_show in enumerate(raw_shows[day]['games']):
 			ignore = False
 			showstring = (raw_show['raw_game'] + " " + raw_show['raw_time']).strip()
-			print("\nShowstrings are", showstrings)
-			print("This showstring is", showstring)
 
+			t_raw = raw_show['raw_time'].split(",")[0]
+			t_mins = get_time_mins(t_raw)
+			if t_mins == 720: t_mins = 0 # prev midnight
 
 			# test if it's already been put in the day's shows
 			if showstring in showstrings:
-				print("it's already in")
 				ignore = True
 
 			# test if it's in the past
-			if day == today:
-				t_mins = get_time_mins(raw_show['raw_time'].split(",")[0])
-				if t_mins == 720: t_mins = 0 # prev midnight
+			if day == today:			
 				if (t_mins < time_now_mins - 180): #
 					ignore = True
 
@@ -66,10 +65,9 @@ def tidy_shows(raw_shows):
 				print("have a show")
 				show={}
 				
-				show['game'] = clean_game(raw_show['raw_game'])
-				
-				t = raw_show['raw_time'].split(",")[0]
-				show['time'] = " ".join([t[:-2], " ", t[-2:]])
+				show['game'] = clean_game(raw_show['raw_game'])		
+				show['time'] = " ".join([t_raw[:-2], " ", t_raw[-2:]])
+				show['t_mins'] = t_mins
 
 				if raw_show['raw_game'].startswith("Live"):
 					show['type'] = 'live'
@@ -86,10 +84,10 @@ def tidy_shows(raw_shows):
 
 				# append it to the games list
 				tidy_out[day]['games'].append(show)
-				print("adding a showstring")
 				showstrings.add(showstring)
-				print("showstrings now, ", showstrings)
 
+		# sort the games
+		tidy_out[day]['games'] = sorted(tidy_out[day]['games'], key=lambda k: k['t_mins'])
 	
 	return tidy_out
 				
