@@ -35,7 +35,7 @@ def tidy_shows(raw_shows):
 	tidy_out = OrderedDict()
 	time_now_mins = (dt.now().hour * 60) + dt.now().minute
 	today = "-".join([str(dt.now().day), str(dt.now().month), str(dt.now().year)])
-	morning_cutoff = 300 # defines the time (in mins) before which a game is assigned to prev night
+	morning_cutoff = 240 # defines the time (in mins) before which a game is assigned to prev night
 	
 
 	for day in raw_shows:
