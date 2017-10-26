@@ -80,7 +80,7 @@ def nfl():
 	tidied = nflsky.tidy_shows(nflsky.get_shows(7))
 	by_game = nflsky.get_by_game(tidied)
 	return render_template('nflsky.html', out=tidied, by_game=by_game, 
-										start_day=calendar.day_name[start_day])
+										start_date=datetime.now().strftime("%A %-d %b %Y"))
 
 
 
