@@ -3,7 +3,7 @@ from flask_bootstrap import Bootstrap
 from cryptfolio import *
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import calendar
 import json
 
@@ -77,10 +77,13 @@ def reset():
 def nfl():
 	
 	start_day = datetime.now().weekday()
+	start_date=datetime.now()
+	end_date=start_date + timedelta(days=7)
 	tidied = nflsky.tidy_shows(nflsky.get_shows(7))
 	by_game = nflsky.get_by_game(tidied)
 	return render_template('nflsky.html', out=tidied, by_game=by_game, 
-										start_date=datetime.now().strftime("%A %-d %b %Y"))
+										start_date=start_date.strftime("%-d %b"),
+										end_date=end_date.strftime("%-d %b"))
 
 
 
