@@ -34,6 +34,7 @@ def tidy_shows(raw_shows):
 	tidy_out = OrderedDict()
 	time_now_mins = (dt.now().hour * 60) + dt.now().minute
 	today = "-".join([str(dt.now().day), str(dt.now().month), str(dt.now().year)])
+	morning_cutoff = 300 # defines the time (in mins) before which a game is assigned to prev night
 	
 
 	for day in raw_shows:
@@ -82,9 +83,15 @@ def tidy_shows(raw_shows):
 					show['game'] = raw_show['raw_game']
 
 				
-
 				# append it to the games list
-				tidy_out[day]['games'].append(show)
+
+				revised_day = day
+				if t_mins < morning_cutoff and day != today:
+					print("this show needs moving")
+					revised_day = "-".join([str(int(day.split('-')[0])-1),"-".join(day.split('-')[1:])])
+					print("revised day is ", revised_day)
+
+				tidy_out[revised_day]['games'].append(show)
 				showstrings.add(showstring)
 
 		# sort the games
