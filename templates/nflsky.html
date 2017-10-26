@@ -14,13 +14,16 @@ NFL on sky
 {% block content %}
 
 <div class="container">
-    <div class="page-header">
-        <h1>Shows this week <small> starting {{ start_day }} </small></h1>
-    </div>
+    <span class="page-header">
+        <h1>Shows this week <small> starting {{ start_day }} </small>
+        <button type="button" class="btn btn-default pull-right" id="game_on">Show by game</button>
+        <button type="button" class="btn btn pull-right" id="date_on" style="display:none;">Show by day</button></h1>
+ 
+    </span>
 </div>
 
 
-<div class="container">
+<div class="container" id="by_date">
   <table class="table table-striped">
       <thead>
 <!-- table header row -->
@@ -67,11 +70,93 @@ NFL on sky
   
 
   </table>
+    <p class="pull-right text-muted"><em>*Shows starting before 4am are listed in previous night</em></p>
 
-    <p class="text-right text-muted"><em>*Shows starting before 4am are listed in previous night<em></p>
 
 </div>
 
+
+<div class="container" id="by_game" style="display:none;">
+  <table class="table table-striped">
+      <thead>
+<!-- table header row -->
+        <th><p>Game</p></th>
+        <th><p>Type</p></th>
+        <th><p>Channel</p></th>
+        <th><p>Day</p></th>
+        <th><p class="text-right">Time*</p></th>
+     
+      </thead>
+
+      <tbody>
+        {% for g in by_game %}
+            <tr>
+              <td><div><strong>{{g}}</strong></div>
+                  <div>{{ d }}</div>
+                  </td>
+
+              <td>{% for show in by_game[g] %}
+                <div class={{ show['type'] }}>{{ show['type'] }}</div>
+                {% endfor %}
+                </td>
+
+
+              <td>{% for show in by_game[g] %}
+                <div class={{ show['type'] }}>{{ show['channel'] }}</div>
+                {% endfor %}
+                </td>
+
+              <td>{% for show in by_game[g] %}
+                <div class={{ show['type'] }}>{{ show['day'] }}</div>
+                {% endfor %}
+                </td>
+
+              <td class="text-right">{% for show in by_game[g] %}
+                <div class={{ show['type'] }}>{{ show['time'] }}</div>
+                {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+
+      </tbody>
+
+  
+
+  </table>
+    <p class="pull-right text-muted"><em>*Shows starting before 4am are listed in previous night<em></p>
+
+
+</div>
+
+
+
+
+<script>
+$(document).ready(function(){
+    // $("#by_game").hide();
+    $("#date_on").hide();
+
+    $("#game_on").click(function(){
+        $("#by_date").hide();
+        $("#game_on").hide();
+        // $("#blocker").hide();
+        $("#by_game").fadeIn();
+        $("#date_on").fadeIn();
+    });
+
+    $("#date_on").click(function(){
+        $("#by_game").hide();
+        $("#date_on").hide();
+        $("#by_date").fadeIn();
+        $("#game_on").fadeIn();
+    });
+
+});
+
+
+
+
+</script>
 
 
 <style type="text/css">
@@ -83,7 +168,14 @@ NFL on sky
 #nfl {
   font-weight: bold;
 }
+
+
+#by_game {
+  display : none;
+}
+
 </style>
+
 
 
 

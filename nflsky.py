@@ -29,6 +29,11 @@ def get_time_mins(string):
     if hours == 12: hours = 0
     return (hours*60) + mins
 
+def get_h_ad(string):
+	'''Takes a date string DD-MM-YY and returns hours post 2000 (not 0 AD!)
+	'''
+	d,m,y = string.split("-")
+	return int(d)*24 + int(m)*24*30 +int(y)*24*30*365
 
 def tidy_shows(raw_shows):
 	
@@ -92,9 +97,46 @@ def tidy_shows(raw_shows):
 
 		# sort the games
 		tidy_out[day]['games'] = sorted(tidy_out[day]['games'], key=lambda k: k['t_mins'])
-	
+
+
+
 	return tidy_out
 				
+
+
+def get_by_game(tidied):
+	'''Takes a dict organised by date, and returns on organised by game (then date)
+	'''
+	by_game = {}
+
+	# make the dict
+	for day in tidied:
+	    for show in tidied[day]['games']:
+	        show['day']=tidied[day]['day']
+	        show['date']=day
+	        show['min_ad'] = get_h_ad(day)*60 + show['t_mins']
+	        
+	        # can do this better with dict.setdefault() I think
+	        if show['game'] not in by_game:
+	            by_game[show['game']]=[show]
+	        else: 
+	            by_game[show['game']].append(show)
+
+
+
+	# take out redzone	
+	by_game.pop('Redzone', None)
+
+	# sort each game
+	for game in by_game:
+	    by_game[game] = sorted(by_game[game], key=lambda k:k['min_ad'])
+
+	# now sort whole thing
+	# by_game = sorted(by_game, key=lambda k:k[0]['min_ad'])
+
+	return by_game
+
+
 
 
 

@@ -77,8 +77,10 @@ def reset():
 def nfl():
 	
 	start_day = datetime.now().weekday()
-	out = nflsky.get_shows(7)
-	return render_template('nflsky.html', out=nflsky.tidy_shows(out), start_day=calendar.day_name[start_day])
+	tidied = nflsky.tidy_shows(nflsky.get_shows(7))
+	by_game = nflsky.get_by_game(tidied)
+	return render_template('nflsky.html', out=tidied, by_game=by_game, 
+										start_day=calendar.day_name[start_day])
 
 
 
