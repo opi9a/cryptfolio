@@ -26,6 +26,7 @@ def get_time_mins(string):
     mins = int(string.split(":")[1][:-2])
     hours = int(string.split(":")[0])
     if ampm == "pm": hours = hours + 12
+    if hours == 12: hours = 0
     return (hours*60) + mins
 
 
@@ -39,7 +40,6 @@ def tidy_shows(raw_shows):
 
 	for day in raw_shows:
 		# make an entry in the final dictionary (for the day)
-		print("\nnew day: ", day)
 		tidy_out[day] = dict(day=raw_shows[day]['day'], games=[])
 		showstrings = set()
 
@@ -50,7 +50,7 @@ def tidy_shows(raw_shows):
 
 			t_raw = raw_show['raw_time'].split(",")[0]
 			t_mins = get_time_mins(t_raw)
-			if t_mins == 720: t_mins = 0 # prev midnight
+			# if t_mins == 720: t_mins = 0 # prev midnight
 
 			# test if it's already been put in the day's shows
 			if showstring in showstrings:
@@ -63,7 +63,6 @@ def tidy_shows(raw_shows):
 
 
 			if not ignore:
-				print("have a show")
 				show={}
 				
 				show['game'] = clean_game(raw_show['raw_game'])		
@@ -82,15 +81,12 @@ def tidy_shows(raw_shows):
 					show['type'] = 'unknown'
 					show['game'] = raw_show['raw_game']
 
-				
-				# append it to the games list
-
+				# check if it needs moving to previous night				
 				revised_day = day
 				if t_mins < morning_cutoff and day != today:
-					print("this show needs moving")
 					revised_day = "-".join([str(int(day.split('-')[0])-1),"-".join(day.split('-')[1:])])
-					print("revised day is ", revised_day)
 
+				# append it to the games list
 				tidy_out[revised_day]['games'].append(show)
 				showstrings.add(showstring)
 
