@@ -13,7 +13,7 @@ NFL on sky
 
 {% block content %}
 
-<div class="container">
+<div class="container-fluid">
     <span class="page-header">
         <h1>Shows this week <small> starting {{ start_day }} </small>
         <button type="button" class="btn btn-default pull-right" id="game_on">Show by game</button>
@@ -23,7 +23,7 @@ NFL on sky
 </div>
 
 
-<div class="container" id="by_date">
+<div class="container-fluid" id="by_date">
   <table class="table table-striped">
       <thead>
 <!-- table header row -->
@@ -76,7 +76,7 @@ NFL on sky
 </div>
 
 
-<div class="container" id="by_game" style="display:none;">
+<div class="container-fluid" id="by_game" style="display:none;">
   <table class="table table-striped">
       <thead>
 <!-- table header row -->
@@ -161,6 +161,12 @@ $(document).ready(function(){
 
 <style type="text/css">
   
+
+.container-fluid {
+    padding-left :155px;
+    padding-right :155px;
+}
+
 .HIGHLIGHTS {
   color: #990000;
 }
