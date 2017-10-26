@@ -26,7 +26,7 @@ def get_time_mins(string):
     mins = int(string.split(":")[1][:-2])
     hours = int(string.split(":")[0])
     if ampm == "pm": hours = hours + 12
-    if hours == 12: hours = 0
+    if hours == 12: hours = 24
     return (hours*60) + mins
 
 def get_h_ad(string):
