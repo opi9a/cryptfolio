@@ -71,7 +71,9 @@ def tidy_shows(raw_shows):
 				show={}
 				
 				show['game'] = clean_game(raw_show['raw_game'])		
-				show['time'] = " ".join([t_raw[:-2], " ", t_raw[-2:]])
+				show['time'] = " ".join([t_raw[:-2], t_raw[-2:]])
+				if show['time'] == "12:00 am": show['time'] = "12:00 mid"
+				if show['time'] == "12:00 pm": show['time'] = "12:00 noon"
 				show['t_mins'] = t_mins
 				show['channel'] = raw_show['channel']
 
