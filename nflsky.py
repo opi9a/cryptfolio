@@ -70,10 +70,10 @@ def tidy_shows(raw_shows):
 			if not ignore:
 				show={}
 				
-				show['game'] = clean_game(raw_show['raw_game'])		
-				show['time'] = " ".join([t_raw[:-2], t_raw[-2:]])
-				if show['time'] == "12:00 am": show['time'] = "12:00 mid"
-				if show['time'] == "12:00 pm": show['time'] = "12:00 noon"
+				show['game'] = clean_game(raw_show['raw_game'])	
+				raw_h = t_raw.split(":")[0]
+				if raw_h == '12': raw_h = '0'
+				show['time'] = "".join([raw_h, ":", t_raw.split(":")[1][:-2], " ", t_raw[-2:]])
 				show['t_mins'] = t_mins
 				show['channel'] = raw_show['channel']
 
