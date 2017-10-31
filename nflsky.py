@@ -21,20 +21,27 @@ def clean_game(game):
 
 	return(game.strip())
 
+def get_time_str(string):
+    ampm = string[-2:]
+    mins = string.split(":")[1][:-2]
+    hours = string.split(":")[0]
+    if hours == '12' and ampm == "am": hours = '0'
+    return "".join([hours, ":", mins, " ", ampm])
 
 def get_time_mins(string):
     ampm = string[-2:]
     mins = int(string.split(":")[1][:-2])
     hours = int(string.split(":")[0])
+    print("\ninitial hours, ", str(hours).rjust(4), ampm)
     if hours == 12: hours = 0
     if ampm == "pm": hours = hours + 12
+    print("subsequent hours, ", str(hours))
     return (hours*60) + mins
 
-def get_h_ad(string):
+def get_u_min(string):
 	'''Takes a date string DD-MM-YY and returns hours post 2000 (not 0 AD!)
 	'''
-	d,m,y = string.split("-")
-	return int(d)*24 + int(m)*24*30 +int(y)*24*30*365
+	return int(dt.strptime(string, "%d-%m-%Y").timestamp()//60)
 
 def tidy_shows(raw_shows):
 	
@@ -42,7 +49,7 @@ def tidy_shows(raw_shows):
 	time_now_mins = (dt.now().hour * 60) + dt.now().minute
 	today = "-".join([str(dt.now().day), str(dt.now().month), str(dt.now().year)])
 	morning_cutoff = 240 # defines the time (in mins) before which a game is assigned to prev night
-	
+	prev_day = None
 
 	for day in raw_shows:
 		# make an entry in the final dictionary (for the day)
@@ -74,9 +81,10 @@ def tidy_shows(raw_shows):
 				show['game'] = clean_game(raw_show['raw_game'])	
 				raw_h = t_raw.split(":")[0]
 				if raw_h == '12': raw_h = '0'
-				show['time'] = "".join([raw_h, ":", t_raw.split(":")[1][:-2], " ", t_raw[-2:]])
+				show['time'] = get_time_str(t_raw)
 				show['t_mins'] = t_mins
 				show['channel'] = raw_show['channel']
+				show['u_time'] = get_u_min(day) + t_mins
 
 				if raw_show['raw_game'].startswith("Live"):
 					show['type'] = 'live'
@@ -117,9 +125,9 @@ def get_by_game(tidied):
 	# make the dict
 	for day in tidied:
 	    for show in tidied[day]['games']:
+	        print("show is ", show)
 	        show['day']=tidied[day]['day']
 	        show['date']=day
-	        show['min_ad'] = get_h_ad(day)*60 + show['t_mins']
 	        
 	        # can do this better with dict.setdefault() I think
 	        if show['game'] not in by_game:
@@ -133,8 +141,8 @@ def get_by_game(tidied):
 	by_game.pop('Redzone', None)
 
 	# sort each game
-	for game in by_game:
-	    by_game[game] = sorted(by_game[game], key=lambda k:k['min_ad'])
+	# for game in by_game:
+	    # by_game[game] = sorted(by_game[game], key=lambda k:k['min_ad'])
 
 	# now sort whole thing
 	# by_game = sorted(by_game, key=lambda k:k[0]['min_ad'])
@@ -173,7 +181,8 @@ def get_shows(days_hence):
 
 	# now go through for real
 	for d in range(days_hence):
-		dt_string = (dt.now() + timedelta(days=d)).strftime("%d-%m-%Y")
+		dt_new = dt.now() + timedelta(days=d)
+		dt_string = dt_new.strftime("%d-%m-%Y")
 		print("dt_string", dt_string)
 
 	
