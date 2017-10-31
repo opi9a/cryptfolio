@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime as dt
+from datetime import timedelta
 from collections import OrderedDict
 import calendar
 from pprint import pprint
@@ -91,11 +92,13 @@ def tidy_shows(raw_shows):
 				# check if it needs moving to previous night				
 				revised_day = day
 				if t_mins < morning_cutoff and day != today:
-					revised_day = "-".join([str(int(day.split('-')[0])-1),"-".join(day.split('-')[1:])])
+					revised_day = prev_day
 
 				# append it to the games list
 				tidy_out[revised_day]['games'].append(show)
 				showstrings.add(showstring)
+
+		prev_day = day	
 
 		# sort the games
 		tidy_out[day]['games'] = sorted(tidy_out[day]['games'], key=lambda k: k['t_mins'])
@@ -146,18 +149,17 @@ def get_shows(days_hence):
 
 	url_base = "http://www.skysports.com/watch/tv-guide/"
 
-	mon_yr = "".join(["-", str(dt.now().month), "-", str(dt.now().year)])
+	# mon_yr = "".join(["-", str(dt.now().month), "-", str(dt.now().year)])
 	start_day = dt.now().day
 	start_weekday = dt.now().weekday()
 
-	days = days_hence
 	out = OrderedDict()
 	last_date = None
 
 	# get list of channels (ordered)
 	print("getting initial page for channel list..")
 	try:
-		r = requests.get(url_base+"".join([str(start_day), mon_yr]))
+		r = requests.get(url_base+dt.now().strftime("%d-%m-%Y"))
 		soup = BeautifulSoup(r.text, 'html.parser')
 		print("..OK")
 
@@ -166,19 +168,22 @@ def get_shows(days_hence):
 		return 1
 	
 	chan_list = [x.split(" src=")[0][1:-1] for x in str(soup.find_all('img')).split("alt=")][1:-1]
-	print("chan list is ", chan_list)
+	# print("chan list is ", chan_list)
 
 
 	# now go through for real
-	for d in range(days):
-		date = "".join([str(start_day+d), mon_yr])
+	for d in range(days_hence):
+		dt_string = (dt.now() + timedelta(days=d)).strftime("%d-%m-%Y")
+		print("dt_string", dt_string)
+
+	
+		out[dt_string] = dict(day=calendar.day_name[(start_weekday+d)%7])
+		out[dt_string]['games'] = []
 		
-		out[date] = dict(day=calendar.day_name[(start_weekday+d)%7])
-		out[date]['games'] = []
+		print("Getting shows for", out[dt_string]['day'], end=".. ")
 		
-		print("Getting shows for", out[date]['day'], end=".. ")
-		
-		url = "".join([url_base, date])
+		url = "".join([url_base, dt_string])
+		print("url is ", url)
 		
 		try:
 			r = requests.get(url)
@@ -207,10 +212,10 @@ def get_shows(days_hence):
 		# now append out list
 		for i, chan in enumerate(chan_list):
 		    for s in nfl_shows[i]:
-		        out[date]['games'].append(dict(raw_game=s[0], raw_time=s[1], channel=chan))
+		        out[dt_string]['games'].append(dict(raw_game=s[0], raw_time=s[1], channel=chan))
 		
 
-		last_date = date
+		last_date = dt_string
 
 
 	return out
