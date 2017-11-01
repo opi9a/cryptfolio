@@ -99,10 +99,12 @@ def tidy_shows(raw_shows):
 
 				# check if it needs moving to previous night				
 				revised_day = day
-				if t_mins < morning_cutoff and day != today:
+				print("revised day", revised_day)
+				if t_mins < morning_cutoff and prev_day is not None:
 					revised_day = prev_day
 
 				# append it to the games list
+				# print("show ", show)
 				tidy_out[revised_day]['games'].append(show)
 				showstrings.add(showstring)
 

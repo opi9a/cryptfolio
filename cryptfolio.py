@@ -29,7 +29,7 @@ def get_coins(conf="config.txt"):
                 i+=1
     return c, v
 
-def get_data(depth=45):
+def get_data(depth=85):
     base="https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit="
     req = requests.get("".join([base,str(depth)]))
     data = json.loads(req.text)       
