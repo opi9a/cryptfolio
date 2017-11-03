@@ -28,18 +28,18 @@ def get_time_str(string):
     if hours == '12' and ampm == "am": hours = '0'
     return "".join([hours, ":", mins, " ", ampm])
 
-def get_time_mins(string):
-    ampm = string[-2:]
-    mins = int(string.split(":")[1][:-2])
-    hours = int(string.split(":")[0])
-    print("\ninitial hours, ", str(hours).rjust(4), ampm)
-    if hours == 12: hours = 0
-    if ampm == "pm": hours = hours + 12
-    print("subsequent hours, ", str(hours))
-    return (hours*60) + mins
+# def get_time_mins(string):
+#     ampm = string[-2:]
+#     mins = int(string.split(":")[1][:-2])
+#     hours = int(string.split(":")[0])
+#     print("\ninitial hours, ", str(hours).rjust(4), ampm)
+#     if hours == 12: hours = 0
+#     if ampm == "pm": hours = hours + 12
+#     print("subsequent hours, ", str(hours))
+#     return (hours*60) + mins
 
 def get_u_min(string):
-	'''Takes a date string DD-MM-YY and returns hours post 2000 (not 0 AD!)
+	'''Takes a date string DD-MM-YY and returns min in unix time
 	'''
 	return int(dt.strptime(string, "%d-%m-%Y").timestamp()//60)
 
@@ -62,7 +62,10 @@ def tidy_shows(raw_shows):
 			showstring = (raw_show['raw_game'] + " " + raw_show['raw_time']).strip()
 
 			t_raw = raw_show['raw_time'].split(",")[0]
-			t_mins = get_time_mins(t_raw)
+			print("t_raw ", t_raw)
+			print("after split ", t_raw[:-2])
+			print("get str ", get_time_str(t_raw[:-2]).split(" ")[0])
+			t_mins = get_u_min(get_time_str(t_raw[:-2]).split(" ")[0])
 			# if t_mins == 720: t_mins = 0 # prev midnight
 
 			# test if it's already been put in the day's shows
@@ -99,7 +102,7 @@ def tidy_shows(raw_shows):
 
 				# check if it needs moving to previous night				
 				revised_day = day
-				print("revised day", revised_day)
+				# print("revised day", revised_day)
 				if t_mins < morning_cutoff and prev_day is not None:
 					revised_day = prev_day
 
@@ -127,7 +130,7 @@ def get_by_game(tidied):
 	# make the dict
 	for day in tidied:
 	    for show in tidied[day]['games']:
-	        print("show is ", show)
+	        # print("show is ", show)
 	        show['day']=tidied[day]['day']
 	        show['date']=day
 	        
