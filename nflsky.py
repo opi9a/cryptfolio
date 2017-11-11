@@ -39,24 +39,26 @@ def get_u_time(raw_date, raw_time):
 	if h == 12: h = 0
 	if ampm == "pm": h = h + 12
 
-	dt_out = dt.strptime(raw_date+"-"+"-".join([str(h),m]), "%d-%m-%Y-%H-%M")
-
-	return dt_out
+	return dt.strptime(raw_date+"-"+"-".join([str(h),m]), "%d-%m-%Y-%H-%M")
 
 
 
 def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 	
-	if _debug: print("debug True, scrape_fail ", _scrape_fail)
-
 	tidy_out = OrderedDict()
 	time_now_mins = (dt.now().hour * 60) + dt.now().minute
-	today = "-".join([str(dt.now().day), str(dt.now().month), str(dt.now().year)])
-	show_started_buffer = 360 # number of mins into past to include shows
+	# today = "-".join([str(dt.now().day), str(dt.now().month), str(dt.now().year)])
+	today = dt.now().strftime("%d-%m-%Y")
+	show_started_buffer = 180 # number of mins into past to include shows
 	morning_cutoff = 240 # defines the time (in mins) before which a game is assigned to prev night
 	prev_day = None
 	prev_showstrings = set()
 	pad = 30
+
+	if _debug: 
+		print("today is".ljust(pad), today)
+		print("debug".ljust(pad), _debug)
+		print("scrape_fail".ljust(pad), _scrape_fail)
 
 	for day in raw_shows:
 		# make an entry in the final dictionary (for the day)
@@ -75,10 +77,14 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 				pprint(raw_show)
 				print("")
 
-			# initialise some variables
+			# initialise some variables	
 			ignore = False
 			showstring = (raw_show['raw_game'] + " " + raw_show['raw_time']).strip()
 			game_dt = get_u_time(day, raw_show['raw_time']) # the universal time as a datetime object
+
+			if _debug: 
+				print("raw time:".ljust(pad), raw_show['raw_time'])
+				print("game_dt:".ljust(pad), game_dt.strftime("%c"))
 
 			# test if it's already been put in the day's shows
 			if showstring in showstrings:
@@ -136,8 +142,9 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 				showstrings.add(showstring)
 
 				if _debug: 
+					print("")
 					pprint(show)
-					print("showstrings ", showstrings)
+					print("\nshowstrings ", showstrings)
 
 		prev_day = day	
 		prev_showstrings = showstrings
@@ -147,6 +154,7 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 
 	return tidy_out
 				
+
 
 
 def get_by_game(tidied):
@@ -168,19 +176,10 @@ def get_by_game(tidied):
 	            by_game[show['game']].append(show)
 
 
-
 	# take out redzone	
 	by_game.pop('Redzone', None)
 
-	# sort each game
-	# for game in by_game:
-	    # by_game[game] = sorted(by_game[game], key=lambda k:k['min_ad'])
-
-	# now sort whole thing
-	# by_game = sorted(by_game, key=lambda k:k[0]['min_ad'])
-
 	return by_game
-
 
 
 
