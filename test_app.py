@@ -6,6 +6,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import calendar
 import json
+import pickle
 
 import nflsky
 
@@ -79,11 +80,29 @@ def nfl():
 	start_day = datetime.now().weekday()
 	start_date=datetime.now()
 	end_date=start_date + timedelta(days=7)
+	scrape_fail = False
+	
+	# try:
 	tidied = nflsky.tidy_shows(nflsky.get_shows(7))
+	start_date=start_date.strftime("%-d %b")
+	end_date=end_date.strftime("%-d %b")
+		
+		# with open("out.pkl", 'wb') as f:
+		# 	pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)
+	
+	# except:
+	# 	# use a pickled version - only when internet down
+	# 	scrape_fail = True
+	# 	with open("out.pkl", 'rb') as f: 
+	# 		out = pickle.load(f)
+	# 	tidied = nflsky.tidy_shows(out, _debug=True, _scrape_fail=True)
+	# 	start_date = "SCRAPING FAILED - showing last cached record, "
+	# 	end_date = out[list(out.keys())[-1]]['day'] + " " + list(out.keys())[-1]
+	
 	by_game = nflsky.get_by_game(tidied)
 	return render_template('nflsky.html', out=tidied, by_game=by_game, 
-										start_date=start_date.strftime("%-d %b"),
-										end_date=end_date.strftime("%-d %b"))
+										start_date=start_date,
+										end_date=end_date)
 
 
 

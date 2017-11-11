@@ -21,77 +21,97 @@ def clean_game(game):
 
 	return(game.strip())
 
-def get_time_str(string):
-    ampm = string[-2:]
-    mins = string.split(":")[1][:-2]
-    hours = string.split(":")[0]
-    if hours == '12' and ampm == "am": hours = '0'
-    return "".join([hours, ":", mins, " ", ampm])
 
-# def get_time_mins(string):
-#     ampm = string[-2:]
-#     mins = int(string.split(":")[1][:-2])
-#     hours = int(string.split(":")[0])
-#     print("\ninitial hours, ", str(hours).rjust(4), ampm)
-#     if hours == 12: hours = 0
-#     if ampm == "pm": hours = hours + 12
-#     print("subsequent hours, ", str(hours))
-#     return (hours*60) + mins
+def get_u_time(raw_date, raw_time):
+	'''Returns unix standard datetime object for the show.
 
-def get_u_min(string):
-	'''Takes a date string DD-MM-YY and returns min in unix time
+	Parameters: 
+
+		a raw date string ('DD-MM-YYYY') for the day of the Sky listing
+
+		a raw time string, scraped from the Sky listing
 	'''
-	return int(dt.strptime(string, "%d-%m-%Y").timestamp()//60)
+	h = int(raw_time.split(",")[0].split(":")[0])
+	m = raw_time.split(",")[0].split(":")[1][:2]
+	ampm = raw_time.split(",")[0].split(":")[1][-2:]
 
-def tidy_shows(raw_shows):
+
+	if h == 12: h = 0
+	if ampm == "pm": h = h + 12
+
+	dt_out = dt.strptime(raw_date+"-"+"-".join([str(h),m]), "%d-%m-%Y-%H-%M")
+
+	return dt_out
+
+
+
+def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 	
+	if _debug: print("debug True, scrape_fail ", _scrape_fail)
+
 	tidy_out = OrderedDict()
 	time_now_mins = (dt.now().hour * 60) + dt.now().minute
 	today = "-".join([str(dt.now().day), str(dt.now().month), str(dt.now().year)])
+	show_started_buffer = 360 # number of mins into past to include shows
 	morning_cutoff = 240 # defines the time (in mins) before which a game is assigned to prev night
 	prev_day = None
+	prev_showstrings = set()
+	pad = 30
 
 	for day in raw_shows:
 		# make an entry in the final dictionary (for the day)
+		if _debug: 
+			print("\n\n" + "+"*110)
+			print("day is".ljust(pad), day)
 		tidy_out[day] = dict(day=raw_shows[day]['day'], games=[])
 		showstrings = set()
 
+		if _debug: print("prev showstrings ", prev_showstrings)
+
 		# go through the games for that day in the raw output
-		for i, raw_show in enumerate(raw_shows[day]['games']):
+		for raw_show in raw_shows[day]['games']:
+			if _debug: 
+				print("\n" + "-"*100)
+				pprint(raw_show)
+				print("")
+
+			# initialise some variables
 			ignore = False
 			showstring = (raw_show['raw_game'] + " " + raw_show['raw_time']).strip()
-
-			t_raw = raw_show['raw_time'].split(",")[0]
-			print("t_raw ", t_raw)
-			print("after split ", t_raw[:-2])
-			print("get str ", get_time_str(t_raw[:-2]).split(" ")[0])
-			t_mins = get_u_min(get_time_str(t_raw[:-2]).split(" ")[0])
-			# if t_mins == 720: t_mins = 0 # prev midnight
+			game_dt = get_u_time(day, raw_show['raw_time']) # the universal time as a datetime object
 
 			# test if it's already been put in the day's shows
 			if showstring in showstrings:
 				ignore = True
-
-			# test if it's in the past
-			if day == today:			
-				if (t_mins < time_now_mins - 180): #
-					ignore = True
+				if _debug: print("ignoring as already found")
 
 
+			# test if it's in the past - only if scrape has not failed
+			if game_dt.timestamp() < (dt.now().timestamp() - (show_started_buffer * 60)) and not _scrape_fail:
+				ignore = True
+				if _debug: print("ignoring as in the past")
+
+			# test if it's a live game, and there's a string in prev day's strings (can't justify doing for highlights, in case of genuine repetition)
+			if showstring in prev_showstrings and "live" in showstring.lower():
+				ignore = True
+				if _debug: print("ignoring as it's a live game from previous day")
+
+			# go ahead and add it, if not to be ignored
 			if not ignore:
-				show={}
-				
+				show = {}  # the dictionary to build for this show
+			
 				show['game'] = clean_game(raw_show['raw_game'])	
-				raw_h = t_raw.split(":")[0]
-				if raw_h == '12': raw_h = '0'
-				show['time'] = get_time_str(t_raw)
-				show['t_mins'] = t_mins
+				show['time'] = game_dt.strftime("%-I:%M %P")
+
+				if game_dt.hour == 0: show['time'] = "0" + show['time'][2:]
+
 				show['channel'] = raw_show['channel']
-				show['u_time'] = get_u_min(day) + t_mins
+				show['u_time'] = game_dt.timestamp()//60
+
+				# determine the type of show
 
 				if raw_show['raw_game'].startswith("Live"):
 					show['type'] = 'live'
-
 
 				elif "hlts" in raw_show['raw_game'].lower():
 					show['type'] = 'HIGHLIGHTS'
@@ -100,23 +120,30 @@ def tidy_shows(raw_shows):
 					show['type'] = 'unknown'
 					show['game'] = raw_show['raw_game']
 
-				# check if it needs moving to previous night				
+				# check if it needs moving to previous night
+
 				revised_day = day
-				# print("revised day", revised_day)
-				if t_mins < morning_cutoff and prev_day is not None:
+				day_mins = (game_dt.hour * 60) + game_dt.minute
+
+				if _debug: print("day_mins is".ljust(pad), day_mins)
+
+				if day_mins < morning_cutoff and prev_day is not None:
+					if _debug: print("shifting to".ljust(pad), prev_day)
 					revised_day = prev_day
 
 				# append it to the games list
-				# print("show ", show)
 				tidy_out[revised_day]['games'].append(show)
 				showstrings.add(showstring)
 
+				if _debug: 
+					pprint(show)
+					print("showstrings ", showstrings)
+
 		prev_day = day	
+		prev_showstrings = showstrings
 
 		# sort the games
-		tidy_out[day]['games'] = sorted(tidy_out[day]['games'], key=lambda k: k['t_mins'])
-
-
+		tidy_out[day]['games'] = sorted(tidy_out[day]['games'], key=lambda k: k['u_time'])
 
 	return tidy_out
 				
