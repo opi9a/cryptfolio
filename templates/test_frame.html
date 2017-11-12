@@ -34,6 +34,7 @@
         <th><p class="text-right">Value, £</p></th>
         <th><p class="text-right">change</p></th>
         <th><p class="text-right">%</p></th>
+        <th><p class="text-right">BTC value</p></th>
         <th><p class="text-right">Share</p></th>
         <th><p class="text-right">Weight</p></th>
         <th><p class="text-right">£PPPW</p></th>        
@@ -68,6 +69,8 @@
               {% else %} <td class="text-right">{{ "{:>0,.0f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
               {% endif %}
 
+              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'values_btc']) }}</td>
+
               <td class="text-right">{{ "{:>0,.1f}%".format(df.loc[i,'shares']*100) }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'weight']) }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'£PPPW']) }}</td>
@@ -97,6 +100,7 @@
             {% else %} <td class="text-right"><strong>{{ "{:>0,.1f}%".format(total_perc_ch*100) }}</strong></td>
             {% endif %}
 
+        <td><strong><p class="text-right">{{ "{:>0,.2f}".format(total_btc) }}</strong></p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>

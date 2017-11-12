@@ -42,30 +42,18 @@ def home(conf="config.txt"):
 
 	# Build df with all the info, starting with `basics`
 
-	df=pd.DataFrame(basics).set_index('coins')
+	df=make_df(basics)
 
-	df=df.join(get_multi(list(df['ticks'])),on='ticks')
-	df['pcent_24h_ch']=df['ch24h_gbp']/(df['ch24h_gbp']+df['prices_gbp'])
-
-	df['values']=df['prices_gbp']*df['vols']
 	total = sum(df['values'])
-	df['value_24h_ch']=df['ch24h_gbp']*df['vols']
-	df['val_pcent_24h_ch']=df['value_24h_ch']/(df['value_24h_ch']+df['values'])
-
+	total_btc = sum(df['values_btc'])
 	total_ch = sum(df['value_24h_ch'])
 	total_perc_ch = total_ch/(total_ch+total)
-
-	df['shares']=df['values']/total
-
-	btc_proportion=df.loc['bitcoin','values']/df.loc['bitcoin','cap_gbp']
-	df['weight']=((df['values']/df['cap_gbp'])/btc_proportion)
-	df['£PPPW']=btc_proportion*df['cap_gbp']*0.01
 
 	temp_dict = {df.loc[i,'ticks']:df.loc[i,'values'] for i in df.index.values}
 
 	return render_template('test_frame.html', 
 							df=df, 
-							total=total, total_ch=total_ch, total_perc_ch=total_perc_ch,
+							total=total, total_ch=total_ch, total_perc_ch=total_perc_ch, total_btc=total_btc,
 							temp_dict = json.dumps(temp_dict), t_now=t_now)
 
 @app.route('/reset/')

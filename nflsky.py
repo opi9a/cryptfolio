@@ -42,7 +42,6 @@ def get_u_time(raw_date, raw_time):
 	return dt.strptime(raw_date+"-"+"-".join([str(h),m]), "%d-%m-%Y-%H-%M")
 
 
-
 def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 	
 	tidy_out = OrderedDict()
@@ -155,8 +154,6 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 	return tidy_out
 				
 
-
-
 def get_by_game(tidied):
 	'''Takes a dict organised by date, and returns on organised by game (then date)
 	'''
@@ -180,8 +177,6 @@ def get_by_game(tidied):
 	by_game.pop('Redzone', None)
 
 	return by_game
-
-
 
 
 def get_shows(days_hence):
@@ -230,7 +225,9 @@ def get_shows(days_hence):
 			soup = BeautifulSoup(r.text, 'html.parser')
 			print("..OK")
 
-		except: print(".. failed")
+		except: 
+			print(".. failed")
+			return 1
 
 		# get the shows for each channel
 		chan_shows = []
