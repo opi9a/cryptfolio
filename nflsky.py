@@ -138,12 +138,13 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 
 				# append it to the games list
 				tidy_out[revised_day]['games'].append(show)
-				showstrings.add(showstring)
 
-				if _debug: 
-					print("")
-					pprint(show)
-					print("\nshowstrings ", showstrings)
+			showstrings.add(showstring)
+
+			if _debug: 
+				print("")
+				pprint(show)
+				print("\nshowstrings ", showstrings)
 
 		prev_day = day	
 		prev_showstrings = showstrings
