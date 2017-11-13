@@ -5,6 +5,7 @@ from datetime import timedelta
 from collections import OrderedDict
 import calendar
 from pprint import pprint
+from operator import itemgetter
 
 
 def clean_game(game):
@@ -149,8 +150,10 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 		prev_day = day	
 		prev_showstrings = showstrings
 
-		# sort the games
-		tidy_out[day]['games'] = sorted(tidy_out[day]['games'], key=lambda k: k['u_time'])
+	# sort the games - NB must be done AFTER the whole dict has been made,
+	# or shifted early am games won't be sorted
+	for d in tidy_out:
+		tidy_out[d]['games'] = sorted(tidy_out[d]['games'], key=itemgetter('u_time'))
 
 	return tidy_out
 				
@@ -180,7 +183,7 @@ def get_by_game(tidied):
 	return by_game
 
 
-def get_shows(days_hence):
+def get_shows(days_hence, _debug=False):
 
 	url_base = "http://www.skysports.com/watch/tv-guide/"
 
@@ -210,7 +213,7 @@ def get_shows(days_hence):
 	for d in range(days_hence):
 		dt_new = dt.now() + timedelta(days=d)
 		dt_string = dt_new.strftime("%d-%m-%Y")
-		print("dt_string", dt_string)
+		if _debug: print("dt_string", dt_string)
 
 	
 		out[dt_string] = dict(day=calendar.day_name[(start_weekday+d)%7])
@@ -219,7 +222,7 @@ def get_shows(days_hence):
 		print("Getting shows for", out[dt_string]['day'], end=".. ")
 		
 		url = "".join([url_base, dt_string])
-		print("url is ", url)
+		if _debug: print("url is ", url)
 		
 		try:
 			r = requests.get(url)
