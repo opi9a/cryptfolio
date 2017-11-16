@@ -4,36 +4,41 @@
 
 import requests
 import json
-import datetime
+from datetime import datetime, timedelta
 import pandas as pd
+import numpy as np
 
 def get_basics(conf='config.txt'):
-    print('\nin read_config\n')
-    out = {}
-    out['coins'], out['vols'] = get_coins(conf)
-    out['ticks'] = get_tickers(out['coins'])
+    '''Reads in the config file.
+
+    Returns a dictionary with coins, vols and ticks as lists.
+    '''
+
+    out = dict(coins=[], vols=[], ticks=[])
+
+    with open(conf, "r") as f:
+        rows = [(l.split()[0], float(l.split()[1])) for l in f if l[0]!='#']
+
+    out['coins'] = [x[0] for x in rows]
+    out['vols'] = [x[1] for x in rows]
+
+    for coin in out['coins']:
+        try:
+            req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",coin,"/"])).text
+            tick = json.loads(req)[0]['symbol']
+            out['ticks'].append(tick)
+        except:
+            print("couldn't find a coin called ", coin)
+
     return out
 
-
-def get_coins(conf="config.txt"):  
-    '''Parses a config file to find coin names and numbers of units
-    Returns two lists:  the coin names and the numbers of units (aka vols)
-    '''
-    c, v = [],[]  
-    with open(conf, "r") as f:
-        i = 0
-        for line in f:
-            if line[0] != "#":
-                c.append(line.split()[0])
-                v.append(float(line.split()[1]))
-                i+=1
-    return c, v
 
 def get_data(depth=85):
     base="https://api.coinmarketcap.com/v1/ticker/?convert=GBP&limit="
     req = requests.get("".join([base,str(depth)]))
     data = json.loads(req.text)       
     return data
+
 
 def get_prices(coins, datafile):
     prices = []
@@ -43,48 +48,64 @@ def get_prices(coins, datafile):
                 prices.append(float(entry['price_gbp']))
     return prices
 
-def get_hist(tickers, timestamp, max_q=7):
+
+def get_hist(tickers, timestamp, max_q=6, _debug=False):
     '''Returns a dictionary of coins with 1/price in GBP
     '''
     base = '''https://min-api.cryptocompare.com/data/pricehistorical?fsym=GBP&tsyms='''
     last=0
-    out=pd.DataFrame(index=[timestamp])
+    row = pd.datetime.fromtimestamp(timestamp).date()
+    out=pd.DataFrame(index=[row])
+
+    if _debug: print("getting ", row, "...", end="  ")
+
     while last<len(tickers):
         c_slice = slice(last, 1+min(last+max_q, len(tickers)))
-#        print(c_slice)
         ticks=",".join(tickers[c_slice])
         ts="".join(["&ts=", str(timestamp)])
+
         url = "".join([base, ticks, ts])
-#        print(url)
+
         req = requests.get(url).text
-#        print(req)
         out_dict = json.loads(req)['GBP'] 
-#        print(out_dict)
-        out_df = pd.DataFrame(out_dict,index=[timestamp])
-#        print(out_df)
+        out_df = pd.DataFrame(out_dict,index=[row])
         out=out.join(out_df)
         last += max_q+1 
+    
+    if _debug: print("ok")
 
     return out
         
-# def get_tickers(coins):
-# 	ticks = []
-# 	for c in coins:
-# 		req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
-# 		tick = json.loads(req)[0]['symbol']
-# 		ticks.append(tick)
-# 	return ticks
 
-def get_tickers(coins):
-    ticks = []
-    for c in coins:
+def fill_history(df, _debug=False):
+    '''Extends an input dataframe with prices, by working out list of days to get,
+    and calling get_hist() function to do the scraping.
+    '''
+    pad = 20
+    
+    # find last date in input dataframe
+    first_missing_date = df.index[-1] + timedelta(days=1)
+    if _debug: print("first_missing_date: ".ljust(pad), first_missing_date)
+
+    # find yesterday - don't want today
+    yday = pd.to_datetime(datetime.now() - timedelta(days=1)).date()
+    if _debug: print("yesterday is: ".ljust(pad), yday)
+        
+    # get list of missing dates
+    date_range = pd.date_range(first_missing_date, yday)
+    if _debug: print("number of days missing ".ljust(pad), len(date_range))
+    missing_days = [x.timestamp() for x in date_range]
+
+    # retrieve prices for list of missing dates
+    for d in missing_days:
         try:
-            req=requests.get("".join(["https://api.coinmarketcap.com/v1/ticker/",c,"/"])).text
-            tick = json.loads(req)[0]['symbol']
-            ticks.append(tick)
+            new_row = 1/get_hist(list(df.columns), d, _debug=_debug)
+            new_row[new_row==np.inf]=0
+            df=df.append(new_row)
         except:
-            print("couldn't find a coin called ", c)
-    return ticks
+            print("failed")
+            return df
+    return df
 
 
 def get_multi(ticks):
@@ -107,10 +128,12 @@ def get_multi(ticks):
     
     return mdf
 
+
 def get_now_prices(ticks):
     base = "https://min-api.cryptocompare.com/data/price?fsym=GBP&tsyms="
     req=requests.get("".join([base,",".join(ticks)])).text
     return(1/pd.DataFrame(json.loads(req),index=['prices']))
+
 
 def calc_values(coins, vols, prices):  
     values, total = [], 0.0
@@ -120,11 +143,13 @@ def calc_values(coins, vols, prices):
         total = total + value    
     return values, total
 
+
 def calc_shares(values, total):
     shares = []    
     for i,value in enumerate(values):
         shares.append(value/total)
     return shares
+
 
 def get_total_mkt():
     targeturl = "https://api.coinmarketcap.com/v1/global/?convert=GBP"
@@ -139,6 +164,7 @@ def get_total_mkt():
        
     return data["total_market_cap_gbp"]
 
+
 def get_coin_caps(coins, datafile):
     caps = []
     for coin in coins:
@@ -146,6 +172,7 @@ def get_coin_caps(coins, datafile):
             if entry['id'] == coin:
                 caps.append(float(entry['market_cap_gbp']))
     return caps    
+
 
 def mk_dict(coins, vols, prices, values, shares, caps):
 
@@ -204,7 +231,7 @@ def make_df(basics):
 
 def print_folio2(coin_dict, total):
     print("")
-    print(str(datetime.datetime.now()).split(".")[0])
+    print(str(datetime.now()).split(".")[0])
     
     len1 = len(max(coin_dict.keys(), key=len))+2
     pad = 13
@@ -223,8 +250,11 @@ def print_folio2(coin_dict, total):
     print("(non bitcoin)", " "*27,  "({:10,.0f})".format(total-coin_dict['bitcoin'][2]))
     print("")
 
+
 def crypt_get(config_file):
-    coins, vols = get_coins(config_file)
+    basics = get_basics(config_file)
+    coins = basics['coins']
+    vols = basics['vols']
     data = get_data()
     prices = get_prices(coins, data)
     if len(coins) == len(prices):
@@ -239,10 +269,11 @@ def crypt_get(config_file):
         print("\nThe coins are", " ".join(coins))
         print("\nThe prices are", " ".join(str(x)[:5] for x in prices))
         print("\nThat probably means a coin has dropped out of the top 20, which \
-is how many coins are retrieved.  This should be fixed in a future \
-version but for now, could look in code to find the call to the \
-coinmarket.cap api, and change the 'limit' argument")
+            is how many coins are retrieved.  This should be fixed in a future \
+            version but for now, could look in code to find the call to the \
+            coinmarket.cap api, and change the 'limit' argument")
     return coin_dict, total
+
 
 def get_blockh():
     req=requests.get('https://blockchain.info/q/getblockcount').text

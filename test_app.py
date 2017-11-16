@@ -21,9 +21,6 @@ def home(conf="config.txt"):
 	# get `basics` of portfolio (coins, vols, tickers) from session dict 
 	# if it exists, or create it (NB: *once*, that's the point) if it doesn't
 
-	# (NB can't use setdefault here, as default is still evaluated, 
-	# defeating the purpose - so just use if else)
-
 	if 'basics' in session.keys():
 		basics=session['basics']
 
@@ -31,29 +28,29 @@ def home(conf="config.txt"):
 		basics=get_basics(conf)#[ticks,vols]
 		session['basics']=basics
 
-	# also get time portfolio was read from session dictionary.
-	# (don't care if default called as no resources needed)
+	# get time portfolio was read from session dictionary, and time now.
 	t_base = session.setdefault('timestamp', 
 					datetime.now().strftime('%a %-d %b, %-H:%M:%S'))
 
-	# and time now
 	t_now = datetime.now().strftime('%a %-d %b, %-H:%M:%S')
 
 
-	# Build df with all the info, starting with `basics`
-
+	# Build df with all the info, taking `basics` as input
 	df=make_df(basics)
 
-	total = sum(df['values'])
-	total_btc = sum(df['values_btc'])
-	total_ch = sum(df['value_24h_ch'])
-	total_perc_ch = total_ch/(total_ch+total)
+	# calculate meta values
+	totals = {}
+	totals['total'] = sum(df['values'])
+	totals['total_btc'] = sum(df['values_btc'])
+	totals['total_ch'] = sum(df['value_24h_ch'])
+	totals['total_perc_ch'] = totals['total_ch'] /(totals['total_ch'] +totals['total'] )
 
+	print('totals', totals)
+
+	# the following is for exploring js/d3 stuff - not actually used
 	temp_dict = {df.loc[i,'ticks']:df.loc[i,'values'] for i in df.index.values}
 
-	return render_template('test_frame.html', 
-							df=df, 
-							total=total, total_ch=total_ch, total_perc_ch=total_perc_ch, total_btc=total_btc,
+	return render_template('test_frame.html', df=df, totals=totals,
 							temp_dict = json.dumps(temp_dict), t_now=t_now)
 
 @app.route('/reset/')

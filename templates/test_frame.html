@@ -9,7 +9,7 @@
 {% block title %}
 {{ super() }}
 
-{{ "£{:0,.0f}".format(total) }}
+{{ "£{:0,.0f}".format(totals['total']) }}
 
 {% endblock %}
 
@@ -87,20 +87,20 @@
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
-        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(total) }}</strong></p></td>
+        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(totals['total']) }}</strong></p></td>
 
 
-            {% if total_ch >0 %} <td class="text-right bg-success"><strong>{{ "{:>0,.0f}".format(total_ch) }}</strong></td>
-            {% elif total_ch <0 %} <td class="text-right bg-danger"><strong>{{ "{:>0,.0f}".format(total_ch) }}</strong></td>
-            {% else %} <td class="text-right"><strong>{{ "{:>0,.0f}".format(total_ch) }}</strong></td>
+            {% if totals['total_ch'] >0 %} <td class="text-right bg-success"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            {% elif totals['total_ch'] <0 %} <td class="text-right bg-danger"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            {% else %} <td class="text-right"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
             {% endif %}
 
-            {% if total_perc_ch >0 %} <td class="text-right bg-success"><strong>{{ "{:>0,.1f}%".format(total_perc_ch*100) }}</strong></td>
-            {% elif total_perc_ch <0 %} <td class="text-right bg-danger"><strong>{{ "{:>0,.1f}%".format(total_perc_ch*100) }}</strong></td>
-            {% else %} <td class="text-right"><strong>{{ "{:>0,.1f}%".format(total_perc_ch*100) }}</strong></td>
+            {% if totals['total_perc_ch'] >0 %} <td class="text-right bg-success"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% elif totals['total_perc_ch'] <0 %} <td class="text-right bg-danger"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% else %} <td class="text-right"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
             {% endif %}
 
-        <td><strong><p class="text-right">{{ "{:>0,.2f}".format(total_btc) }}</strong></p></td>
+        <td><strong><p class="text-right">{{ "{:>0,.2f}".format(totals['total_btc']) }}</strong></p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
         <td><p class="text-right"> </p></td>
