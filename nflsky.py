@@ -108,7 +108,7 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 				show = {}  # the dictionary to build for this show
 			
 				show['game'] = clean_game(raw_show['raw_game'])	
-				show['time'] = game_dt.strftime("%-I:%M %p")
+				show['time'] = game_dt.strftime("%-I:%M %p").lower()
 
 				if game_dt.hour == 0: show['time'] = "0" + show['time'][2:]
 
