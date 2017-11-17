@@ -54,6 +54,7 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 	prev_day = None
 	prev_showstrings = set()
 	pad = 30
+	show = None
 
 	if _debug: 
 		print("today is".ljust(pad), today)
@@ -107,7 +108,7 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 				show = {}  # the dictionary to build for this show
 			
 				show['game'] = clean_game(raw_show['raw_game'])	
-				show['time'] = game_dt.strftime("%-I:%M %P")
+				show['time'] = game_dt.strftime("%-I:%M %p")
 
 				if game_dt.hour == 0: show['time'] = "0" + show['time'][2:]
 
