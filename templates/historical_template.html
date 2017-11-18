@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block head %}
+
+{{ super() }}
+<meta http-equiv="refresh" content="300"> 
+{% endblock %}  
+
+{% block title %}
+{{ super() }}
+
+mOOn
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1 style="text-align: left;">Portfolio Value</h1>
+    </div>
+</div>
+
+<div><img src={{ plotfile }} ></div>
+
+
+<style type="text/css">
+  
+#hist {
+  font-weight: bold;
+}
+</style>
+
+
+{% endblock %}

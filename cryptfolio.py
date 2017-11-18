@@ -7,6 +7,8 @@ import json
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
+import sys
 
 def get_basics(conf='config.txt'):
     '''Reads in the config file.
@@ -106,6 +108,44 @@ def fill_history(df, _debug=False):
             print("failed")
             return df
     return df
+
+
+def plot_history(basics):
+    # load past prices and fill
+    price_hist = fill_history(pd.read_pickle("price_history.pkl"))
+
+    # save (before adding today's prices)
+    price_hist.to_pickle("price_history.pkl")
+    price_hist.to_csv("price_history.csv")
+
+    # append today's prices
+    today_row = pd.DataFrame([get_now_prices(price_hist.columns).loc['prices', x] for x in price_hist.columns], 
+                 index=price_hist.columns, columns=[pd.to_datetime(datetime.now().date())]).T
+
+    price_hist1 = price_hist.append(today_row)
+
+    # make value history
+    value_hist = pd.concat([price_hist1[tick]*basics['vols'][i] for i, tick in enumerate(basics['ticks'])], axis=1)
+    sum_hist = value_hist.sum(axis=1)
+
+    yr_ago = pd.to_datetime(datetime.now() - timedelta(days=365)).date()
+    month_ago = pd.to_datetime(datetime.now() - timedelta(days=30)).date()
+
+    fig, axs = plt.subplots(1,3, figsize = (20,10), sharey=True)
+    axs[0].plot(sum_hist)
+    axs[0].set_title("All Time")
+    axs[1].plot(sum_hist.loc[yr_ago:])
+    axs[1].set_title("1 Year")
+    axs[2].plot(sum_hist.loc[month_ago:])
+    axs[2].set_title("1 Month")
+
+    plotfile = "".join(["static/figs/testfig_", str(int(datetime.now().timestamp())),".png"])
+
+    print("plotfile is ", plotfile)
+
+    fig.savefig(plotfile)
+
+    return plotfile
 
 
 def get_multi(ticks):

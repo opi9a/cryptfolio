@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import calendar
 import json
 import pickle
+import os
 
 import nflsky
 
@@ -15,8 +16,11 @@ app.config['SECRET_KEY']="YeCqhrYGgBqrwH5XRHuj4XFBmY"
 
 bootstrap = Bootstrap(app)
 
+conf = "j.config.txt"
+
+
 @app.route('/')
-def home(conf="config.txt"):
+def home():
 
 	# get `basics` of portfolio (coins, vols, tickers) from session dict 
 	# if it exists, or create it (NB: *once*, that's the point) if it doesn't
@@ -58,6 +62,31 @@ def reset():
 	print("\nin reset\n")
 	session.clear()
 	return redirect(url_for('home'))
+
+@app.route('/historical/')
+def historical():
+	
+	if 'basics' in session.keys():
+		basics=session['basics']
+
+	else:
+		basics=get_basics(conf)#[ticks,vols]
+		session['basics']=basics
+
+	if not os.path.isdir('static/figs'):
+		if not os.path.isdir('static'):
+			os.makedirs('static/')
+		os.makedirs('static/figs')
+
+	plotfile = "".join(["/", plot_history(basics)])
+
+
+	return render_template('historical_template.html', plotfile = plotfile)
+	# update price history
+	# calculate stuff
+	# make graph(s)
+
+	pass
 
 @app.route('/nfl/')
 def nfl():
