@@ -129,16 +129,28 @@ def plot_history(basics, interactive = False):
     sum_hist = value_hist.sum(axis=1)
 
     if interactive:
-        from bokeh.plotting import figure, show
-        from bokeh.io import output_notebook
-        from bokeh.models import NumeralTickFormatter, Range1d, DataRange1d
+        from bokeh.plotting import figure, show, ColumnDataSource
+        from bokeh.models import NumeralTickFormatter, Range1d, DataRange1d, HoverTool
         from bokeh.embed import components
 
-        p = figure(title="Portfolio value", y_axis_label='£',
-           plot_width=1000, plot_height=550,
-          x_axis_type="datetime")
+        df = pd.DataFrame(sum_hist, columns=["value"])
+        df['dates'] = sum_hist.index
 
-        p.line(sum_hist.index, sum_hist, line_width=2)
+        source = ColumnDataSource(df)
+        source.add(df['dates'].apply(lambda x: x.strftime("%d %b %y")), name='t_dates')
+        hover = HoverTool(tooltips=[
+            ("date","@t_dates"),
+            ("value","£$y{int,}"),
+        ])
+
+        TOOLS = "pan,wheel_zoom,box_zoom,xzoom_in,xzoom_out,yzoom_in,yzoom_out,reset,save,box_select,undo, redo"
+
+        p = figure(title="Portfolio value", y_axis_label='£',
+                   plot_width=1000, plot_height=550,
+                   tools=[hover, TOOLS],
+                  x_axis_type="datetime")
+
+        p.line(x='dates', y='value', source=source, line_width=2)
         p.yaxis[0].formatter = NumeralTickFormatter(format="£0,")
         p.y_range = Range1d(bounds=(0, max(sum_hist)*1.1))
         p.y_range = DataRange1d(bounds=(0, max(sum_hist)*1.1))
