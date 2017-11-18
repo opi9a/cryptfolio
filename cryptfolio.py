@@ -110,7 +110,7 @@ def fill_history(df, _debug=False):
     return df
 
 
-def plot_history(basics):
+def plot_history(basics, interactive = False):
     # load past prices and fill
     price_hist = fill_history(pd.read_pickle("price_history.pkl"))
 
@@ -128,24 +128,45 @@ def plot_history(basics):
     value_hist = pd.concat([price_hist1[tick]*basics['vols'][i] for i, tick in enumerate(basics['ticks'])], axis=1)
     sum_hist = value_hist.sum(axis=1)
 
-    yr_ago = pd.to_datetime(datetime.now() - timedelta(days=365)).date()
-    month_ago = pd.to_datetime(datetime.now() - timedelta(days=30)).date()
+    if interactive:
+        from bokeh.plotting import figure, show
+        from bokeh.io import output_notebook
+        from bokeh.models import NumeralTickFormatter, Range1d, DataRange1d
+        from bokeh.embed import components
 
-    fig, axs = plt.subplots(1,3, figsize = (20,10), sharey=True)
-    axs[0].plot(sum_hist)
-    axs[0].set_title("All Time")
-    axs[1].plot(sum_hist.loc[yr_ago:])
-    axs[1].set_title("1 Year")
-    axs[2].plot(sum_hist.loc[month_ago:])
-    axs[2].set_title("1 Month")
+        p = figure(title="Portfolio value", y_axis_label='£',
+           plot_width=1000, plot_height=550,
+          x_axis_type="datetime")
 
-    plotfile = "".join(["static/figs/testfig_", str(int(datetime.now().timestamp())),".png"])
+        p.line(sum_hist.index, sum_hist, line_width=2)
+        p.yaxis[0].formatter = NumeralTickFormatter(format="£0,")
+        p.y_range = Range1d(bounds=(0, max(sum_hist)*1.1))
+        p.y_range = DataRange1d(bounds=(0, max(sum_hist)*1.1))
 
-    print("plotfile is ", plotfile)
+        script, div = components(p)
 
-    fig.savefig(plotfile)
+        return script, div
 
-    return plotfile
+
+    else:
+        yr_ago = pd.to_datetime(datetime.now() - timedelta(days=365)).date()
+        month_ago = pd.to_datetime(datetime.now() - timedelta(days=30)).date()
+
+        fig, axs = plt.subplots(1,3, figsize = (20,10), sharey=True)
+        axs[0].plot(sum_hist)
+        axs[0].set_title("All Time")
+        axs[1].plot(sum_hist.loc[yr_ago:])
+        axs[1].set_title("1 Year")
+        axs[2].plot(sum_hist.loc[month_ago:])
+        axs[2].set_title("1 Month")
+
+        plotfile = "".join(["static/figs/testfig_", str(int(datetime.now().timestamp())),".png"])
+
+        print("plotfile is ", plotfile)
+
+        fig.savefig(plotfile)
+
+        return plotfile
 
 
 def get_multi(ticks):

@@ -82,11 +82,23 @@ def historical():
 
 
 	return render_template('historical_template.html', plotfile = plotfile)
-	# update price history
-	# calculate stuff
-	# make graph(s)
 
-	pass
+
+@app.route('/interactive_history/')
+def interactive_history():
+	
+	if 'basics' in session.keys():
+		basics=session['basics']
+
+	else:
+		basics=get_basics(conf)#[ticks,vols]
+		session['basics']=basics
+
+	script, div = plot_history(basics, interactive=True)
+
+	return render_template('interactive_historical_template.html', script = script, div=div)
+
+	
 
 @app.route('/nfl/')
 def nfl():

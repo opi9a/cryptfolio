@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block head %}
+
+{{ super() }}
+<meta http-equiv="refresh" content="300"> 
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.4.min.css"
+    rel="stylesheet" type="text/css">
+
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.4.min.js"></script>
+{% endblock %}  
+
+{% block title %}
+{{ super() }}
+
+mOOn
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<div>
+{{ script|safe }}
+{{ div|safe }}</div>
+
+
+<style type="text/css">
+  
+#int {
+  font-weight: bold;
+}
+</style>
+
+
+{% endblock %}
