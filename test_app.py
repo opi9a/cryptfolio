@@ -16,7 +16,7 @@ app.config['SECRET_KEY']="YeCqhrYGgBqrwH5XRHuj4XFBmY"
 
 bootstrap = Bootstrap(app)
 
-conf = "j.config.txt"
+conf = "config.txt"
 
 
 @app.route('/')
