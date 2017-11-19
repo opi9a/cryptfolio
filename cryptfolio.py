@@ -147,7 +147,7 @@ def plot_history(basics, interactive = False):
 
         p = figure(title="Portfolio value", y_axis_label='£',
                    plot_width=1000, plot_height=550,
-                   tools=[hover, TOOLS],
+                   tools=[hover, TOOLS], logo="grey",
                   x_axis_type="datetime")
 
         p.line(x='dates', y='value', source=source, line_width=2)
