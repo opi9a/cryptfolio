@@ -79,6 +79,46 @@ def get_hist(tickers, timestamp, max_q=6, _debug=False):
     return out
         
 
+def add_coin_hist(tick, df, date_from=None, _debug=False):
+    '''adds a new coin history to a dataframe
+
+    provide date_from in format DD-MM-YY
+
+    otherwise will go from start of df
+    '''
+    base = '''https://min-api.cryptocompare.com/data/pricehistorical?fsym=GBP&tsyms='''
+
+
+
+    if date_from is None:
+        start_date = df.index[0]
+        if _debug: print("no date_from, start date is ", start_date)
+
+    else: 
+        days_hist = (datetime.strptime(date_from, "%d-%m-%y").date() - datetime.now().date()).days
+        if _debug: print("days history ", days_hist)
+        
+        start_date = df.index[days_hist]
+
+
+    if _debug: print("start date is ", start_date.date())
+
+    yday = pd.to_datetime(datetime.now() - timedelta(days=1)).date() 
+
+    out = {}
+
+    for d in [int(x.timestamp()) for x in pd.date_range(start_date, yday)]:
+        if _debug: print("date is", datetime.fromtimestamp(d).date())
+        url="".join([base, tick, "&ts=", str(d)])
+        if _debug: print("url is", url)
+        out[pd.datetime.fromtimestamp(d).date()] = json.loads(requests.get(url).text)['GBP'][tick]
+ 
+    df.index = pd.DatetimeIndex(df.index)
+    
+    return df.join(pd.Series(out, name=tick)).fillna(0)
+
+
+
 def fill_history(df, _debug=False):
     '''Extends an input dataframe with prices, by working out list of days to get,
     and calling get_hist() function to do the scraping.
@@ -110,23 +150,59 @@ def fill_history(df, _debug=False):
     return df
 
 
-def plot_history(basics, interactive = False):
+def plot_history(basics, interactive = False, _debug=True, _timed=False, session=None):
     # load past prices and fill
-    price_hist = fill_history(pd.read_pickle("price_history.pkl"))
+    start_time = datetime.now().timestamp()
+    last_time = start_time
+    pad = 40
+
+    price_hist = fill_history(pd.read_pickle("price_history.pkl"), _debug=_debug)
+
+    if _debug: print("price history columns ", price_hist.columns)
+
+    if _timed: print("after fill_history".ljust(pad), 
+                    "{:>20}".format(int((datetime.now().timestamp() - start_time) * 10**3)),
+                    "{:>20}".format(int((datetime.now().timestamp() - last_time ) * 10**3)))
 
     # save (before adding today's prices)
     price_hist.to_pickle("price_history.pkl")
     price_hist.to_csv("price_history.csv")
 
     # append today's prices
-    today_row = pd.DataFrame([get_now_prices(price_hist.columns).loc['prices', x] for x in price_hist.columns], 
+    print("session is", session)
+    if session is not None and 'now_prices' in session.keys():
+        now_prices = session['now_prices']
+        if _debug: print("found session, so NOT calling get_now_prices")
+
+    else: 
+        # now_prices = 1/pd.DataFrame(get_now_prices(price_hist.columns), index=['prices'])
+        now_prices = get_now_prices(price_hist.columns)
+        if _debug: print("did not find session, so calling get_now_prices")
+        session['now_prices'] = now_prices
+
+    now_prices_df = 1/pd.DataFrame(now_prices, index=['prices'])
+        
+    today_row = pd.DataFrame([now_prices_df.loc['prices', x] for x in price_hist.columns], 
                  index=price_hist.columns, columns=[pd.to_datetime(datetime.now().date())]).T
+
+
+
+    if _timed: print("after getting today row".ljust(pad), 
+                    "{:>20}".format(int((datetime.now().timestamp() - start_time) * 10**3)),
+                    "{:>20}".format(int((datetime.now().timestamp() - last_time ) * 10**3)))
 
     price_hist1 = price_hist.append(today_row)
 
     # make value history
-    value_hist = pd.concat([price_hist1[tick]*basics['vols'][i] for i, tick in enumerate(basics['ticks'])], axis=1)
+    value_hist = pd.concat([price_hist1[tick]*basics['vols'][i] 
+                    for i, tick in enumerate(basics['ticks'])
+                    if tick in price_hist.columns], axis=1)
+
     sum_hist = value_hist.sum(axis=1)
+
+    if _timed: print("after making value dfs".ljust(pad),
+                    "{:>20}".format(int((datetime.now().timestamp() - start_time) * 10**3)),
+                    "{:>20}".format(int((datetime.now().timestamp() - last_time ) * 10**3)))
 
     if interactive:
         from bokeh.plotting import figure, show, ColumnDataSource
@@ -143,7 +219,7 @@ def plot_history(basics, interactive = False):
             ("value","£$y{int,}"),
         ])
 
-        TOOLS = "pan,wheel_zoom,box_zoom,xzoom_in,xzoom_out,yzoom_in,yzoom_out,reset,save,box_select,undo, redo"
+        TOOLS = "pan,wheel_zoom,box_zoom,xzoom_in,xzoom_out,reset,save,box_select,undo, redo"
 
         p = figure(title="Portfolio value", y_axis_label='£',
                    plot_width=1000, plot_height=550,
@@ -205,7 +281,9 @@ def get_multi(ticks):
 def get_now_prices(ticks):
     base = "https://min-api.cryptocompare.com/data/price?fsym=GBP&tsyms="
     req=requests.get("".join([base,",".join(ticks)])).text
-    return(1/pd.DataFrame(json.loads(req),index=['prices']))
+    # now_prices = (1/pd.DataFrame(json.loads(req),index=['prices']))
+
+    return json.loads(req)
 
 
 def calc_values(coins, vols, prices):  

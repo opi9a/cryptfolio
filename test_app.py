@@ -78,7 +78,7 @@ def historical():
 			os.makedirs('static/')
 		os.makedirs('static/figs')
 
-	plotfile = "".join(["/", plot_history(basics)])
+	plotfile = "".join(["/", plot_history(basics, session=session)])
 
 
 	return render_template('historical_template.html', plotfile = plotfile)
@@ -94,11 +94,11 @@ def interactive_history():
 		basics=get_basics(conf)#[ticks,vols]
 		session['basics']=basics
 
-	script, div = plot_history(basics, interactive=True)
+	script, div = plot_history(basics, session=session, interactive=True)
 
 	return render_template('interactive_historical_template.html', script = script, div=div)
 
-	
+
 
 @app.route('/nfl/')
 def nfl():
