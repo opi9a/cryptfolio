@@ -1,3 +1,8 @@
 bitcoin 1.337
 dogecoin 99999.99
 monero 12.34
+ethereum 200
+dash 20
+bitcoin-cash 2
+litecoin 20
+#vertcoin 100

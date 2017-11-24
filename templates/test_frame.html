@@ -4,6 +4,7 @@
 
 {{ super() }}
 <meta http-equiv="refresh" content="300"> 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 {% endblock %}  
 
 {% block title %}
@@ -30,11 +31,12 @@
         <th><p class="text-right">Price, £</p></th>
         <th><p class="text-right">change</p></th>
         <th><p class="text-right">Price, $</p></th>
+        <th><p class="text-right">Price, m<i class="fa fa-btc"></i></p></th>
         <th><p class="text-right">Volume</p></th>
         <th><p class="text-right">Value, £</p></th>
         <th><p class="text-right">change</p></th>
         <th><p class="text-right">%</p></th>
-        <th><p class="text-right">BTC value</p></th>
+        <th><p class="text-right">Value, <i class="fa fa-btc"></i></p></th>
         <th><p class="text-right">Share</p></th>
         <th><p class="text-right">Weight</p></th>
         <th><p class="text-right">£PPPW</p></th>        
@@ -55,6 +57,7 @@
               {% endif %}
 
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_usd']) }}</td>
+              <td class="text-right">{{ "{:>0,.1f}".format(df.loc[i,'prices_btc']*1000) }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'vols']) }}</td>
               <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'values']) }}</td>
 
@@ -79,14 +82,12 @@
             </tr>
         {% endfor %}
 
-<!-- bottom row of table -->
+<!-- bottom row of table - use a couple of for loops with hardcoded numbers to make spacers -->
       <tr>
         <td><strong> TOTAL </strong></td>
+        {% for i in range(6) %}
         <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
+        {% endfor %}
         <td><strong><p class="text-right">{{ "{:>0,.0f}".format(totals['total']) }}</strong></p></td>
 
 
@@ -101,9 +102,9 @@
             {% endif %}
 
         <td><strong><p class="text-right">{{ "{:>0,.2f}".format(totals['total_btc']) }}</strong></p></td>
+        {% for i in range(3) %}
         <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
-        <td><p class="text-right"> </p></td>
+        {% endfor %}
       </tr>
 
       </tbody>

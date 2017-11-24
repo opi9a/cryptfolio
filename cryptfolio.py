@@ -151,6 +151,11 @@ def fill_history(df, _debug=False):
 
 
 def plot_history(basics, interactive = False, _debug=True, _timed=False, session=None):
+    '''plots value history, optionally in bokeh ('interactive')
+
+    NB needs there to be a properly formed 'price_hist' dataframe in the environment,
+    so THIS IS NOT A STANDALONE FUNCTION
+    '''
     # load past prices and fill
     start_time = datetime.now().timestamp()
     last_time = start_time
