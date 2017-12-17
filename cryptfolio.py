@@ -381,6 +381,7 @@ def make_df(basics):
     btc_proportion=df.loc['bitcoin','values']/df.loc['bitcoin','cap_gbp']
     df['weight']=((df['values']/df['cap_gbp'])/btc_proportion)
     df['£PPPW']=btc_proportion*df['cap_gbp']*0.01
+    df['zeta']=100*df['cap_gbp']/df.loc['bitcoin','cap_gbp']
 
     return df
 

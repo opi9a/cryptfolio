@@ -18,7 +18,7 @@
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1>Portfolio Value <small> at {{ t_now }}</small></h1>
+        <h1>Portfolio Value <small>for {{ user }} at {{ t_now }}</small></h1>
     </div>
 </div>
 
@@ -40,6 +40,7 @@
         <th><p class="text-right">Share</p></th>
         <th><p class="text-right">Weight</p></th>
         <th><p class="text-right">£PPPW</p></th>        
+        <th><p class="text-right">&#950</p></th>        
       </thead>
 
       <tbody>
@@ -76,7 +77,8 @@
 
               <td class="text-right">{{ "{:>0,.1f}%".format(df.loc[i,'shares']*100) }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'weight']) }}</td>
-              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'£PPPW']) }}</td>
+              <td class="text-right" id="pppw">{{ "{:>0,.0f}".format(df.loc[i,'£PPPW']) }}</td>
+              <td class="text-right">{{ "{:>0,.1f}".format(df.loc[i,'zeta']) }}</td>
 
 
             </tr>
@@ -102,10 +104,21 @@
             {% endif %}
 
         <td><strong><p class="text-right">{{ "{:>0,.2f}".format(totals['total_btc']) }}</strong></p></td>
-        {% for i in range(3) %}
+        {% for i in range(4) %}
         <td><p class="text-right"> </p></td>
         {% endfor %}
       </tr>
+
+      {% if bonus %}
+
+      <tr>
+        <td colspan=7>Total with {{ "{:>0,.0f}".format(bonus) }} fiat</td>
+        <td class="text-right"> {{ "{:>0,.0f}".format(totals['total'] + bonus) }} </td>
+        <td colspan=7></td>
+      </tr>
+
+
+     {% endif %}
 
       </tbody>
 

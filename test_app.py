@@ -8,6 +8,7 @@ import calendar
 import json
 import pickle
 import os
+import getpass
 
 import nflsky
 
@@ -54,7 +55,12 @@ def home():
 	# the following is for exploring js/d3 stuff - not actually used
 	temp_dict = {df.loc[i,'ticks']:df.loc[i,'values'] for i in df.index.values}
 
-	return render_template('test_frame.html', df=df, totals=totals,
+	# this is a hack so I can show my total including fiat from crypto sold
+	user = getpass.getuser()
+	bonus = 0
+	if user == 'gav': bonus = 68000
+
+	return render_template('test_frame.html', df=df, totals=totals, bonus=bonus, user=user,
 							temp_dict = json.dumps(temp_dict), t_now=t_now)
 
 @app.route('/reset/')
