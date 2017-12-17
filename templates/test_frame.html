@@ -84,6 +84,7 @@
             </tr>
         {% endfor %}
 
+
 <!-- bottom row of table - use a couple of for loops with hardcoded numbers to make spacers -->
       <tr>
         <td><strong> TOTAL </strong></td>
@@ -109,10 +110,19 @@
         {% endfor %}
       </tr>
 
-      {% if bonus %}
+<!-- add a row if have some fiat from crypto -->
+    {% if bonus %}
 
       <tr>
-        <td colspan=7>Total with {{ "{:>0,.0f}".format(bonus) }} fiat</td>
+        <td colspan=2>Fiat from crypto</td>
+        {% for i in range(5) %}  <td class="text-right">-</td> {% endfor %}
+        <td class="text-right"> {{ "{:>0,.0f}".format(bonus) }} </td>
+        {% for i in range(7) %}  <td class="text-right">-</td> {% endfor %}
+      </tr>
+
+
+      <tr>
+        <td colspan=7>Total with fiat</td>
         <td class="text-right"> {{ "{:>0,.0f}".format(totals['total'] + bonus) }} </td>
         <td colspan=7></td>
       </tr>

@@ -58,7 +58,6 @@ def home():
 	# this is a hack so I can show my total including fiat from crypto sold
 	user = getpass.getuser()
 	bonus = 0
-	if user == 'gav': bonus = 68000
 
 	return render_template('test_frame.html', df=df, totals=totals, bonus=bonus, user=user,
 							temp_dict = json.dumps(temp_dict), t_now=t_now)
