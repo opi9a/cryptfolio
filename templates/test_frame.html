@@ -17,30 +17,29 @@
 
 {% block content %}
 <div class="container">
-    <div class="page-header">
-        <h1>Portfolio Value <small>for {{ user }} at {{ t_now }}</small></h1>
-    </div>
-</div>
 
-<div class="container">
+  <h1 style="margin-bottom: 50">Portfolio Value <small>for {{ user }} at {{ t_now }}</small></h1>
+
   <table class="table table-striped">
       <thead>
 <!-- table header row -->
-        <th><p class="text-left">Coin</p></th>
-        <th><p class="text-left">Ticker</p></th>
-        <th><p class="text-right">Price, £</p></th>
-        <th><p class="text-right">change</p></th>
-        <th><p class="text-right">Price, $</p></th>
-        <th><p class="text-right">Price, m<i class="fa fa-btc"></i></p></th>
-        <th><p class="text-right">Volume</p></th>
-        <th><p class="text-right">Value, £</p></th>
-        <th><p class="text-right">change</p></th>
-        <th><p class="text-right">%</p></th>
-        <th><p class="text-right">Value, <i class="fa fa-btc"></i></p></th>
-        <th><p class="text-right">Share</p></th>
-        <th><p class="text-right">Weight</p></th>
-        <th><p class="text-right">£PPPW</p></th>        
-        <th><p class="text-right">&#950</p></th>        
+        <th class="text-left">Coin</th>
+        <th class="text-left">Ticker</th>
+        <th class="text-right">Price, £</th>
+        <th class="text-right ch24">ch vs 24h</th>
+        <th class="text-right chlast" style="display: none">ch vs last</th>
+        <th class="text-right">Price, $</th>
+        <th class="text-right">Price, m<i class="fa fa-btc"></i></th>
+        <th class="text-right">Volume</th>
+        <th class="text-right">Value, £</th>
+        <th class="text-right ch24">ch vs 24h</th>
+        <th class="text-right ch24">%</th>
+        <th class="text-right chlast" style="display: none">ch vs last</th>
+        <th class="text-right chlast" style="display: none">%</th>
+        <th class="text-right">Value, <i class="fa fa-btc"></i></th>
+        <th class="text-right">Share</th>
+        <th class="text-right">Weight</th>
+        <th class="text-right">£PPPW</th>        
       </thead>
 
       <tbody>
@@ -51,35 +50,56 @@
               <td>{{ df.loc[i,'ticks'] }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_gbp']) }}</td>
 
-<!-- colour change block -->
-              {% if df.loc[i,'ch24h_gbp']>0 %} <td class="text-right bg-success">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
-              {% elif df.loc[i,'ch24h_gbp']<0 %} <td class="text-right bg-danger">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
-              {% else %} <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+<!-- colour change block for price change-->
+<!-- change vs 24h version -->
+             {% if df.loc[i,'ch24h_gbp']>0 %} <td class="text-right bg-success ch24">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              {% elif df.loc[i,'ch24h_gbp']<0 %} <td class="text-right bg-danger  ch24">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              {% else %} <td class="text-right ch24">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
               {% endif %}
+
+<!-- change vs last version -->
+             {% if df.loc[i,'price_last_ch']>0 %} <td class="text-right bg-success chlast" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
+              {% elif df.loc[i,'price_last_ch']<0 %} <td class="text-right bg-danger  chlast" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
+              {% else %} <td class="text-right chlast" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
+              {% endif %}
+
 
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_usd']) }}</td>
               <td class="text-right">{{ "{:>0,.1f}".format(df.loc[i,'prices_btc']*1000) }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'vols']) }}</td>
               <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'values']) }}</td>
 
-<!-- colour change block -->
-              {% if df.loc[i,'value_24h_ch']>0 %} <td class="text-right bg-success">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
-              {% elif df.loc[i,'value_24h_ch']<0 %} <td class="text-right bg-danger">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
-              {% else %} <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+<!-- colour change blocks for change in value -->
+<!-- change vs 24h version -->
+              {% if df.loc[i,'value_24h_ch']>0 %} <td class="text-right bg-success ch24">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% elif df.loc[i,'value_24h_ch']<0 %} <td class="text-right bg-danger ch24">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% else %} <td class="text-right ch24">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% endif %}
+<!-- change vs last version -->
+              {% if df.loc[i,'value_last_ch']>0 %} <td class="text-right bg-success chlast" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
+              {% elif df.loc[i,'value_last_ch']<0 %} <td class="text-right bg-danger chlast" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
+              {% else %} <td class="text-right chlast" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
               {% endif %}
 
-              {% if df.loc[i,'val_pcent_24h_ch']>0 %} <td class="text-right bg-success">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
-              {% elif df.loc[i,'val_pcent_24h_ch']<0 %} <td class="text-right bg-danger">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
-              {% else %} <td class="text-right">{{ "{:>0,.0f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+
+<!-- colour change blocks for change in value, percent -->
+<!-- change vs 24h version -->
+              {% if df.loc[i,'val_pcent_24h_ch']>0 %} <td class="text-right bg-success ch24">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% elif df.loc[i,'val_pcent_24h_ch']<0 %} <td class="text-right bg-danger ch24">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% else %} <td class="text-right ch24">{{ "{:>0,.0f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
               {% endif %}
+<!-- change vs last version -->
+              {% if df.loc[i,'value_last_ch_per']>0 %} <td class="text-right bg-success chlast" style="display: none">{{ "{:>0,.1f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
+              {% elif df.loc[i,'value_last_ch_per']<0 %} <td class="text-right bg-danger chlast" style="display: none">{{ "{:>0,.1f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
+              {% else %} <td class="text-right chlast" style="display: none">{{ "{:>0,.0f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
+              {% endif %}
+
 
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'values_btc']) }}</td>
 
               <td class="text-right">{{ "{:>0,.1f}%".format(df.loc[i,'shares']*100) }}</td>
               <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'weight']) }}</td>
               <td class="text-right" id="pppw">{{ "{:>0,.0f}".format(df.loc[i,'£PPPW']) }}</td>
-              <td class="text-right">{{ "{:>0,.1f}".format(df.loc[i,'zeta']) }}</td>
-
 
             </tr>
         {% endfor %}
@@ -89,24 +109,35 @@
       <tr>
         <td><strong> TOTAL </strong></td>
         {% for i in range(6) %}
-        <td><p class="text-right"> </p></td>
+        <td><div class="text-right"> </td>
         {% endfor %}
-        <td><strong><p class="text-right">{{ "{:>0,.0f}".format(totals['total']) }}</strong></p></td>
+        <td><strong><div class="text-right">{{ "{:>0,.0f}".format(totals['total']) }}</strong></td>
 
-
-            {% if totals['total_ch'] >0 %} <td class="text-right bg-success"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
-            {% elif totals['total_ch'] <0 %} <td class="text-right bg-danger"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
-            {% else %} <td class="text-right"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            <!-- change vs 24h version -->
+            {% if totals['total_ch'] >0 %} <td class="text-right bg-success ch24"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            {% elif totals['total_ch'] <0 %} <td class="text-right bg-danger ch24"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            {% else %} <td class="text-right ch24"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
             {% endif %}
 
-            {% if totals['total_perc_ch'] >0 %} <td class="text-right bg-success"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
-            {% elif totals['total_perc_ch'] <0 %} <td class="text-right bg-danger"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
-            {% else %} <td class="text-right"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% if totals['total_perc_ch'] >0 %} <td class="text-right bg-success ch24"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% elif totals['total_perc_ch'] <0 %} <td class="text-right bg-danger ch24"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% else %} <td class="text-right"><strong ch24>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
             {% endif %}
 
-        <td><strong><p class="text-right">{{ "{:>0,.2f}".format(totals['total_btc']) }}</strong></p></td>
-        {% for i in range(4) %}
-        <td><p class="text-right"> </p></td>
+            <!-- change vs last version -->
+            {% if totals['total_ch_last'] >0 %} <td class="text-right bg-success chlast" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
+            {% elif totals['total_ch_last'] <0 %} <td class="text-right bg-danger chlast" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
+            {% else %} <td class="text-right chlast" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
+            {% endif %}
+
+            {% if totals['total_perc_ch_last'] >0 %} <td class="text-right bg-success chlast" style="display: none"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
+            {% elif totals['total_perc_ch_last'] <0 %} <td class="text-right bg-danger chlast" style="display: none"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
+            {% else %} <td class="text-right"><strong chlast>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
+            {% endif %}
+
+        <td><strong><div class="text-right">{{ "{:>0,.2f}".format(totals['total_btc']) }}</strong></td>
+        {% for i in range(3) %}
+        <td><div class="text-right"> </td>
         {% endfor %}
       </tr>
 
@@ -133,11 +164,15 @@
       </tbody>
 
   </table>
+
+<a href="/reset/"">reload portfolio</a>
+
+<button type="button" class="btn btn-primary btn-xs pull-right" id="ch24_button" style="display: none;">change vs 24h</button>
+<button type="button" class="btn btn-primary btn-xs pull-right" id="chlast_button">change vs last update</button>
+
 </div>
 
-<div class="container">
-    <a href="/reset/"">reload portfolio</a>
-</div>
+
 
 <script type="text/javascript">
   
@@ -159,6 +194,29 @@
 
 
   console.log(in_data, coins, vals);
+
+
+
+$(document).ready(function(){
+    // $("#by_game").hide();
+
+    $("#chlast_button").click(function(){
+        $("#chlast_button").hide();
+        $("#ch24_button").show();
+        $(".ch24").hide();
+        $(".chlast").show();
+        // hide ch_24 col
+        // show ch_last col
+    });
+
+    $("#ch24_button").click(function(){
+        $("#chlast_button").show();
+        $("#ch24_button").hide();
+        $(".ch24").show();
+        $(".chlast").hide();
+    });
+
+});
 
 
 

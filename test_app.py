@@ -43,12 +43,30 @@ def home():
 	# Build df with all the info, taking `basics` as input
 	df=make_df(basics)
 
+	if 'last_values' in session.keys():
+		df['value_last_ch'] = df['values'] - pd.Series(session['last_values'])
+		df['value_last_ch_per'] = df['value_last_ch'] / pd.Series(session['last_values'])
+	else:
+		df['value_last_ch'] = 0
+		df['value_last_ch_per'] = 0
+
+	session['last_values'] = dict(df['values'])
+
+	if 'last_prices' in session.keys():
+		df['price_last_ch'] = df['prices_gbp'] - pd.Series(session['last_prices'])
+	else:
+		df['price_last_ch'] = 0
+
+	session['last_prices'] = dict(df['prices_gbp'])
+
 	# calculate meta values
 	totals = {}
 	totals['total'] = sum(df['values'])
 	totals['total_btc'] = sum(df['values_btc'])
 	totals['total_ch'] = sum(df['value_24h_ch'])
+	totals['total_ch_last'] = sum(df['value_last_ch'])
 	totals['total_perc_ch'] = totals['total_ch'] /(totals['total_ch'] +totals['total'] )
+	totals['total_perc_ch_last'] = totals['total_ch_last'] /(totals['total_ch_last'] +totals['total'] )
 
 	print('totals', totals)
 
