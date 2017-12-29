@@ -26,16 +26,16 @@
         <th class="text-left">Coin</th>
         <th class="text-left">Ticker</th>
         <th class="text-right">Price, £</th>
-        <th class="text-right ch24">ch vs 24h</th>
-        <th class="text-right chlast" style="display: none">ch vs last</th>
+        <th class="text-right ch24"  style="display: none;">ch vs 24h</th>
+        <th class="text-right chlast">vs {{t_since}} ago</th>
         <th class="text-right">Price, $</th>
         <th class="text-right">Price, m<i class="fa fa-btc"></i></th>
         <th class="text-right">Volume</th>
         <th class="text-right">Value, £</th>
-        <th class="text-right ch24">ch vs 24h</th>
-        <th class="text-right ch24">%</th>
-        <th class="text-right chlast" style="display: none">ch vs last</th>
-        <th class="text-right chlast" style="display: none">%</th>
+        <th class="text-center ch24" colspan="2" style="display: none;">vs 24h ago</th>
+        
+        <th class="text-center chlast" colspan="2">vs {{t_since}} ago</th>
+        <!-- <th class="text-right chlast">%</th> -->
         <th class="text-right">Value, <i class="fa fa-btc"></i></th>
         <th class="text-right">Share</th>
         <th class="text-right">Weight</th>
@@ -167,8 +167,8 @@
 
 <a href="/reset/"">reload portfolio</a>
 
-<button type="button" class="btn btn-primary btn-xs pull-right" id="ch24_button" style="display: none;">change vs 24h</button>
-<button type="button" class="btn btn-primary btn-xs pull-right" id="chlast_button">change vs last update</button>
+<button type="button" class="btn btn-primary btn-xs pull-right" id="ch24_button">change vs 24h ago</button>
+<button type="button" class="btn btn-primary btn-xs pull-right" id="chlast_button" style="display: none;">change vs last</button>
 
 </div>
 

@@ -38,7 +38,8 @@ def home():
 					datetime.now().strftime('%a %-d %b, %-H:%M:%S'))
 
 	t_now = datetime.now().strftime('%a %-d %b, %-H:%M:%S')
-
+	s_since = 0
+	t_since = ''
 
 	# Build df with all the info, taking `basics` as input
 	df=make_df(basics)
@@ -46,11 +47,14 @@ def home():
 	if 'last_values' in session.keys():
 		df['value_last_ch'] = df['values'] - pd.Series(session['last_values'])
 		df['value_last_ch_per'] = df['value_last_ch'] / pd.Series(session['last_values'])
+		s_since = (datetime.now() - session['last_time']).seconds
 	else:
 		df['value_last_ch'] = 0
 		df['value_last_ch_per'] = 0
+		s_since = 0
 
 	session['last_values'] = dict(df['values'])
+
 
 	if 'last_prices' in session.keys():
 		df['price_last_ch'] = df['prices_gbp'] - pd.Series(session['last_prices'])
@@ -58,6 +62,7 @@ def home():
 		df['price_last_ch'] = 0
 
 	session['last_prices'] = dict(df['prices_gbp'])
+	session['last_time'] = datetime.now()
 
 	# calculate meta values
 	totals = {}
@@ -67,6 +72,12 @@ def home():
 	totals['total_ch_last'] = sum(df['value_last_ch'])
 	totals['total_perc_ch'] = totals['total_ch'] /(totals['total_ch'] +totals['total'] )
 	totals['total_perc_ch_last'] = totals['total_ch_last'] /(totals['total_ch_last'] +totals['total'] )
+
+	if s_since <60: t_since = str(s_since) + 's'
+	elif s_since <3600: t_since = str(int(s_since/60)) + 'm'
+	elif s_since <(3600*24) : t_since = str(int(s_since/3600)) + 'h'
+	else: t_since = '?'
+
 
 	print('totals', totals)
 
@@ -78,7 +89,7 @@ def home():
 	bonus = 0
 
 	return render_template('test_frame.html', df=df, totals=totals, bonus=bonus, user=user,
-							temp_dict = json.dumps(temp_dict), t_now=t_now)
+							temp_dict = json.dumps(temp_dict), t_now=t_now, t_since=t_since)
 
 @app.route('/reset/')
 def reset():
