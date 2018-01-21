@@ -120,7 +120,7 @@ def tidy_shows(raw_shows, _debug=False, _scrape_fail=False):
 				if raw_show['raw_game'].startswith("Live"):
 					show['type'] = 'live'
 
-				elif "hlts" in raw_show['raw_game'].lower():
+				elif "hlt" in raw_show['raw_game'].lower():
 					show['type'] = 'HIGHLIGHTS'
 
 				else:
@@ -248,7 +248,7 @@ def get_shows(days_hence, _debug=False):
 		nfl_shows = []
 		for c in chan_shows:
 		    nfl_shows.append([x for x in c if 
-		    		("nfl" in x[0].lower()) and("live" in x[0].lower() or "hlts" in x[0].lower())])
+		    		("nfl" in x[0].lower()) and("live" in x[0].lower() or "hlt" in x[0].lower())])
 
 
 		# now append out list

@@ -279,6 +279,11 @@ def get_multi(ticks):
     mdf['cap_usd'] = [mult[t]['USD']['MKTCAP'] for t in ticks]
     mdf['ch24h_gbp'] = [mult[t]['GBP']['CHANGE24HOUR'] for t in ticks]
     mdf['ch24h_usd'] = [mult[t]['USD']['CHANGE24HOUR'] for t in ticks]
+
+    print('cols are', mdf.columns)
+
+    for col in mdf.columns:
+        mdf[col] = mdf[col].astype('float')
     
     return mdf
 

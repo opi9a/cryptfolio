@@ -27,14 +27,14 @@
         <th class="text-left">Ticker</th>
         <th class="text-right">Price, £</th>
         <th class="text-right ch24"  style="display: none;">vs 24h prev</th>
-        <th class="text-right chlast">vs {{t_since}} prev</th>
+        <th class="text-right chlast">vs {{t_since}} ago</th>
         <th class="text-right">Price, $</th>
         <th class="text-right">Price, m<i class="fa fa-btc"></i></th>
         <th class="text-right">Volume</th>
         <th class="text-right">Value, £</th>
-        <th class="text-center ch24" colspan="2" style="display: none;">vs 24h prev</th>
+        <th class="text-center ch24" colspan="2" style="display: none;">vs 24h ago</th>
         
-        <th class="text-center chlast" colspan="2">vs {{t_since}} prev</th>
+        <th class="text-center chlast" colspan="2">vs {{t_since}} ago</th>
         <!-- <th class="text-right chlast">%</th> -->
         <th class="text-right">Value, <i class="fa fa-btc"></i></th>
         <th class="text-right">Share</th>
@@ -48,58 +48,58 @@
             <tr class={{i}}>
               <td>{{ i.title() }}</td>
               <td>{{ df.loc[i,'ticks'] }}</td>
-              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_gbp']) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.2f}".format(df.loc[i,'prices_gbp']) }}</td>
 
 <!-- colour change block for price change-->
 <!-- change vs 24h version -->
-             {% if df.loc[i,'ch24h_gbp']>0 %} <td class="text-right bg-success ch24" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
-              {% elif df.loc[i,'ch24h_gbp']<0 %} <td class="text-right bg-danger  ch24" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
-              {% else %} <td class="text-right ch24" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+             {% if df.loc[i,'ch24h_gbp']>0 %} <td class="text-right tbod bg-success ch24" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              {% elif df.loc[i,'ch24h_gbp']<0 %} <td class="text-right tbod bg-danger  ch24" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
+              {% else %} <td class="text-right tbod ch24" style="display: none">{{ "{:>0,.2f}".format(df.loc[i,'ch24h_gbp']) }}</td>
               {% endif %}
 
 <!-- change vs last version -->
-             {% if df.loc[i,'price_last_ch']>0 %} <td class="text-right bg-success chlast">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
-              {% elif df.loc[i,'price_last_ch']<0 %} <td class="text-right bg-danger  chlast">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
-              {% else %} <td class="text-right chlast">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
+             {% if df.loc[i,'price_last_ch']>0 %} <td class="text-right tbod bg-success chlast">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
+              {% elif df.loc[i,'price_last_ch']<0 %} <td class="text-right tbod bg-danger  chlast">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
+              {% else %} <td class="text-right tbod chlast">{{ "{:>0,.2f}".format(df.loc[i,'price_last_ch']) }}</td>
               {% endif %}
 
 
-              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'prices_usd']) }}</td>
-              <td class="text-right">{{ "{:>0,.1f}".format(df.loc[i,'prices_btc']*1000) }}</td>
-              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'vols']) }}</td>
-              <td class="text-right">{{ "{:>0,.0f}".format(df.loc[i,'values']) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.2f}".format(df.loc[i,'prices_usd']) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.1f}".format(df.loc[i,'prices_btc']*1000) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.2f}".format(df.loc[i,'vols']) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.0f}".format(df.loc[i,'values']) }}</td>
 
 <!-- colour change blocks for change in value -->
 <!-- change vs 24h version -->
-              {% if df.loc[i,'value_24h_ch']>0 %} <td class="text-right bg-success ch24" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
-              {% elif df.loc[i,'value_24h_ch']<0 %} <td class="text-right bg-danger ch24" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
-              {% else %} <td class="text-right ch24" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% if df.loc[i,'value_24h_ch']>0 %} <td class="text-right tbod bg-success ch24" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% elif df.loc[i,'value_24h_ch']<0 %} <td class="text-right tbod bg-danger ch24" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
+              {% else %} <td class="text-right tbod ch24" style="display: none">{{ "{:>0,.0f}".format(df.loc[i,'value_24h_ch']) }}</td>
               {% endif %}
 <!-- change vs last version -->
-              {% if df.loc[i,'value_last_ch']>0 %} <td class="text-right bg-success chlast">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
-              {% elif df.loc[i,'value_last_ch']<0 %} <td class="text-right bg-danger chlast">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
-              {% else %} <td class="text-right chlast">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
+              {% if df.loc[i,'value_last_ch']>0 %} <td class="text-right tbod bg-success chlast">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
+              {% elif df.loc[i,'value_last_ch']<0 %} <td class="text-right tbod bg-danger chlast">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
+              {% else %} <td class="text-right tbod chlast">{{ "{:>0,.0f}".format(df.loc[i,'value_last_ch']) }}</td>
               {% endif %}
 
 
 <!-- colour change blocks for change in value, percent -->
 <!-- change vs 24h version -->
-              {% if df.loc[i,'val_pcent_24h_ch']>0 %} <td class="text-right bg-success ch24" style="display: none">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
-              {% elif df.loc[i,'val_pcent_24h_ch']<0 %} <td class="text-right bg-danger ch24" style="display: none">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
-              {% else %} <td class="text-right ch24" style="display: none">{{ "{:>0,.0f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% if df.loc[i,'val_pcent_24h_ch']>0 %} <td class="text-right tbod bg-success ch24" style="display: none">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% elif df.loc[i,'val_pcent_24h_ch']<0 %} <td class="text-right tbod bg-danger ch24" style="display: none">{{ "{:>0,.1f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
+              {% else %} <td class="text-right tbod ch24" style="display: none">{{ "{:>0,.0f}%".format(df.loc[i,'val_pcent_24h_ch']*100) }}</td>
               {% endif %}
 <!-- change vs last version -->
-              {% if df.loc[i,'value_last_ch_per']>0 %} <td class="text-right bg-success chlast">{{ "{:>0,.1f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
-              {% elif df.loc[i,'value_last_ch_per']<0 %} <td class="text-right bg-danger chlast">{{ "{:>0,.1f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
-              {% else %} <td class="text-right chlast">{{ "{:>0,.0f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
+              {% if df.loc[i,'value_last_ch_per']>0 %} <td class="text-right tbod bg-success chlast">{{ "{:>0,.1f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
+              {% elif df.loc[i,'value_last_ch_per']<0 %} <td class="text-right tbod bg-danger chlast">{{ "{:>0,.1f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
+              {% else %} <td class="text-right tbod chlast">{{ "{:>0,.0f}%".format(df.loc[i,'value_last_ch_per']*100) }}</td>
               {% endif %}
 
 
-              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'values_btc']) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.2f}".format(df.loc[i,'values_btc']) }}</td>
 
-              <td class="text-right">{{ "{:>0,.1f}%".format(df.loc[i,'shares']*100) }}</td>
-              <td class="text-right">{{ "{:>0,.2f}".format(df.loc[i,'weight']) }}</td>
-              <td class="text-right" id="pppw">{{ "{:>0,.0f}".format(df.loc[i,'£PPPW']) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.1f}%".format(df.loc[i,'shares']*100) }}</td>
+              <td class="text-right tbod">{{ "{:>0,.2f}".format(df.loc[i,'weight']) }}</td>
+              <td class="text-right tbod" id="pppw">{{ "{:>0,.0f}".format(df.loc[i,'£PPPW']) }}</td>
 
             </tr>
         {% endfor %}
@@ -109,35 +109,35 @@
       <tr>
         <td><strong> TOTAL </strong></td>
         {% for i in range(6) %}
-        <td><div class="text-right"> </td>
+        <td><div class="text-right tbod"> </td>
         {% endfor %}
-        <td><strong><div class="text-right">{{ "{:>0,.0f}".format(totals['total']) }}</strong></td>
+        <td><strong><div class="text-right tbod">{{ "{:>0,.0f}".format(totals['total']) }}</strong></td>
 
             <!-- change vs 24h version -->
-            {% if totals['total_ch'] >0 %} <td class="text-right bg-success ch24" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
-            {% elif totals['total_ch'] <0 %} <td class="text-right bg-danger ch24" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
-            {% else %} <td class="text-right ch24" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            {% if totals['total_ch'] >0 %} <td class="text-right tbod bg-success ch24" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            {% elif totals['total_ch'] <0 %} <td class="text-right tbod bg-danger ch24" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
+            {% else %} <td class="text-right tbod ch24" style="display: none"><strong>{{ "{:>0,.0f}".format(totals['total_ch']) }}</strong></td>
             {% endif %}
 
-            {% if totals['total_perc_ch'] >0 %} <td class="text-right bg-success ch24" style="display: none"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
-            {% elif totals['total_perc_ch'] <0 %} <td class="text-right bg-danger ch24" style="display: none"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
-            {% else %} <td class="text-right" style="display: none"><strong ch24>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% if totals['total_perc_ch'] >0 %} <td class="text-right tbod bg-success ch24" style="display: none"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% elif totals['total_perc_ch'] <0 %} <td class="text-right tbod bg-danger ch24" style="display: none"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
+            {% else %} <td class="text-right tbod" style="display: none"><strong ch24>{{ "{:>0,.1f}%".format(totals['total_perc_ch']*100) }}</strong></td>
             {% endif %}
 
             <!-- change vs last version -->
-            {% if totals['total_ch_last'] >0 %} <td class="text-right bg-success chlast"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
-            {% elif totals['total_ch_last'] <0 %} <td class="text-right bg-danger chlast"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
-            {% else %} <td class="text-right chlast"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
+            {% if totals['total_ch_last'] >0 %} <td class="text-right tbod bg-success chlast"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
+            {% elif totals['total_ch_last'] <0 %} <td class="text-right tbod bg-danger chlast"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
+            {% else %} <td class="text-right tbod chlast"><strong>{{ "{:>0,.0f}".format(totals['total_ch_last']) }}</strong></td>
             {% endif %}
 
-            {% if totals['total_perc_ch_last'] >0 %} <td class="text-right bg-success chlast"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
-            {% elif totals['total_perc_ch_last'] <0 %} <td class="text-right bg-danger chlast"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
-            {% else %} <td class="text-right"><strong chlast>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
+            {% if totals['total_perc_ch_last'] >0 %} <td class="text-right tbod bg-success chlast"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
+            {% elif totals['total_perc_ch_last'] <0 %} <td class="text-right tbod bg-danger chlast"><strong>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
+            {% else %} <td class="text-right tbod"><strong chlast>{{ "{:>0,.1f}%".format(totals['total_perc_ch_last']*100) }}</strong></td>
             {% endif %}
 
-        <td><strong><div class="text-right">{{ "{:>0,.2f}".format(totals['total_btc']) }}</strong></td>
+        <td><strong><div class="text-right tbod">{{ "{:>0,.2f}".format(totals['total_btc']) }}</strong></td>
         {% for i in range(3) %}
-        <td><div class="text-right"> </td>
+        <td><div class="text-right tbod"> </td>
         {% endfor %}
       </tr>
 
@@ -167,8 +167,10 @@
 
 <a href="/reset/"">reload portfolio</a>
 
-<button type="button" class="btn btn-primary btn-xs pull-right" id="ch24_button">change vs 24h prev</button>
+<button type="button" class="btn btn-primary btn-xs pull-right" id="ch24_button">change vs 24h ago</button>
 <button type="button" class="btn btn-primary btn-xs pull-right" id="chlast_button" style="display: none;">change vs last</button>
+
+<button type="button" class="btn btn-default btn-xs pull-right" id="tbod_button">tbod</button>
 
 </div>
 
@@ -214,6 +216,20 @@ $(document).ready(function(){
         $("#ch24_button").hide();
         $(".ch24").show();
         $(".chlast").hide();
+    });
+
+    var tbod_hidden = false;
+
+    $("#tbod_button").click(function(){
+        if (tbod_hidden) {
+          $(".tbod").show();
+          tbod_hidden = false;
+        }
+
+        else {
+          $(".tbod").hide();
+          tbod_hidden = true;
+        }
     });
 
 });
