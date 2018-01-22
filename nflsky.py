@@ -15,8 +15,8 @@ def clean_game(game):
 		game = game[8:]
 	if game.startswith("NFL"):
 		game = game[4:]	
-	if game.startswith("Hlts"):
-		game = game[4:]
+	if game.startswith("Hlt"):
+		game = " ".join(game.split()[1:])
 	if game.startswith(":"):
 		game = game[1:]		
 
